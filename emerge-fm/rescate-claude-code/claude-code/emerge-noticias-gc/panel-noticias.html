@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control GC · Emerge Noticias</title>
+<!--
+  Panel de control del GC de «Emerge Noticias» (estilo canal 24 horas).
+  Se abre como acoplable de OBS (Acoplables → Acoplables de navegador personalizados) o en cualquier navegador.
+
+  Mismo mecanismo que los GC de «Emerge tu mañana» y «La Ciudad de la Furia»: se conecta al servidor
+  WebSocket de OBS y le cambia la URL a las fuentes de navegador que muestran gc-noticias.html
+  (los datos viajan como parámetros de la URL).
+    · Fuente de la placa:  gc-noticias.html            → Mostrar / Ocultar
+    · Fuente base:         gc-noticias.html?modo=base  → cintillo + mosca, quedan fijos al aire
+-->
+<style>
+  @font-face { font-family: 'Unbounded'; src: url('fuentes/Unbounded-ExtraBold.ttf') format('truetype'); font-weight: 800; font-display: swap; }
+  @font-face { font-family: 'Unbounded'; src: url('fuentes/Unbounded-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+  @font-face { font-family: 'Space Grotesk'; src: url('fuentes/SpaceGrotesk-Medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
+  @font-face { font-family: 'Space Grotesk'; src: url('fuentes/SpaceGrotesk-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+  :root { --negro: #0a0a0a; --blanco: #fff; --verde: #00e6ab; --ambar: #ffc93c; --rojo: #e0242c; --superficie: #161616; --linea: #2c2c2c; --medio: #8C8C8C; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--negro); color: var(--blanco); font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 15px; line-height: 1.45; }
+  .app { max-width: 720px; margin: 0 auto; padding: 18px 18px 40px; }
+  h1, h2 { font-family: 'Unbounded', sans-serif; margin: 0; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  header .iso { width: 44px; height: 44px; border-radius: 50%; background: #000; display: grid; place-items: center; flex: none; border: 2px solid var(--linea); }
+  header .iso img { width: 30px; height: 30px; }
+  header h1 { font-size: 17px; font-weight: 800; line-height: 1.15; margin-right: auto; }
+  header h1 small { display: block; font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--verde); }
+  .chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; border: 2px solid var(--linea); color: var(--medio); }
+  .chip i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .chip.ok { border-color: var(--verde); color: var(--verde); }
+  .chip.aire { border-color: var(--rojo); background: var(--rojo); color: var(--blanco); }
+  .chip.aire i { animation: late 1s steps(2, jump-none) infinite; }
+  .chip.espera { border-color: var(--ambar); color: var(--ambar); }
+  @keyframes late { to { opacity: 0.25; } }
+
+  .previa { position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; border: 2px solid var(--linea); background: #111; margin-bottom: 8px; }
+  .previa iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; }
+  .previa-pie { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; font-size: 12px; color: var(--medio); }
+  .previa-pie .seg { margin-left: auto; }
+
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .tab { border: 2px solid var(--linea); background: transparent; color: var(--blanco); border-radius: 999px; padding: 9px 18px; font: 700 14px 'Space Grotesk', sans-serif; cursor: pointer; }
+  .tab:hover { border-color: var(--verde); }
+  .tab[aria-pressed="true"] { background: var(--verde); border-color: var(--verde); color: var(--negro); }
+  .tab[data-placa="ultima"][aria-pressed="true"] { background: var(--ambar); border-color: var(--ambar); }
+
+  .campos { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+  .solo { display: none; } .solo.on { display: flex; }
+  label.campo { display: flex; flex-direction: column; gap: 6px; }
+  label.campo > span, .rotulo { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--verde); }
+  input[type="text"], input[type="password"], input[type="number"], textarea, select { width: 100%; background: var(--superficie); border: 2px solid var(--linea); border-radius: 12px; color: var(--blanco); font: 500 16px 'Space Grotesk', sans-serif; padding: 11px 14px; }
+  textarea { resize: vertical; min-height: 96px; }
+  input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible { outline: 3px solid var(--verde); outline-offset: 2px; }
+  input::placeholder, textarea::placeholder { color: #5d5d5d; }
+  .fila { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .fila > * { flex: 1; min-width: 130px; }
+
+  .acciones { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 6px 0 12px; }
+  .btn { border: 2px solid var(--linea); background: transparent; color: var(--blanco); border-radius: 999px; padding: 12px 20px; font: 700 14px 'Space Grotesk', sans-serif; cursor: pointer; }
+  .btn:hover { border-color: var(--blanco); }
+  .btn.principal { font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: 15px; background: var(--verde); border-color: var(--verde); color: var(--negro); padding: 14px 26px; }
+  .btn.principal:active { transform: translateY(2px); }
+  .btn.encendido { background: var(--verde); border-color: var(--verde); color: var(--negro); }
+  .btn.chico { padding: 8px 14px; font-size: 13px; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .guardados { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .guardado { display: inline-flex; align-items: stretch; border: 2px solid var(--linea); border-radius: 999px; overflow: hidden; }
+  .guardado button { background: transparent; border: 0; color: var(--blanco); font: 500 13px 'Space Grotesk', sans-serif; padding: 7px 12px; cursor: pointer; }
+  .guardado button:hover { background: var(--superficie); }
+  .guardado button.x { color: var(--medio); border-left: 2px solid var(--linea); padding: 7px 10px; }
+  .guardado.ultima { border-color: rgba(255, 201, 60, 0.5); }
+
+  section.caja { background: var(--superficie); border-radius: 16px; padding: 16px 18px; margin-top: 16px; }
+  section.caja h2 { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  section.caja h2 .chip { margin-left: auto; }
+  section.caja input[type="text"], section.caja input[type="password"], section.caja input[type="number"], section.caja select, section.caja textarea { background: var(--negro); }
+  .aviso { font-size: 13px; color: #ffe7a8; background: rgba(255, 201, 60, 0.12); border-radius: 10px; padding: 9px 12px; margin-top: 10px; }
+  .aviso:empty { display: none; }
+  .nota { font-size: 13px; color: var(--medio); margin: 10px 0 0; }
+  .pasos { margin: 0; padding-left: 20px; color: #cfcfcf; font-size: 14px; }
+  .pasos li { margin-bottom: 8px; }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; color: var(--verde); word-break: break-all; }
+  input[type="range"] { width: 100%; accent-color: var(--verde); }
+  label.check { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; padding-bottom: 12px; }
+  label.check input { width: 18px; height: 18px; accent-color: var(--verde); }
+  .seg { display: inline-flex; border: 2px solid var(--linea); border-radius: 999px; overflow: hidden; }
+  .seg button { background: transparent; border: 0; color: var(--medio); font: 700 12px 'Space Grotesk', sans-serif; padding: 6px 12px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--blanco); color: var(--negro); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <span class="iso"><img src="img/isotipo.png" alt=""></span>
+    <h1>Control GC<small>Emerge Noticias</small></h1>
+    <span class="chip" id="chip-aire"><i></i><span>Oculto</span></span>
+  </header>
+
+  <div class="previa"><iframe id="previa" title="Vista previa del GC"></iframe></div>
+  <div class="previa-pie">
+    <span>Vista previa: placa, cintillo y mosca juntos.</span>
+    <span class="seg" id="seg-fondo" role="group" aria-label="Fondo de la vista previa">
+      <button data-v="foto" aria-pressed="true">Imagen</button><button data-v="cuadros" aria-pressed="false">Cuadros</button><button data-v="negro" aria-pressed="false">Negro</button>
+    </span>
+  </div>
+
+  <div class="tabs" role="group" aria-label="Tipo de placa">
+    <button class="tab" data-placa="titular">Titular</button>
+    <button class="tab" data-placa="ultima">Última hora</button>
+    <button class="tab" data-placa="persona">Entrevistado</button>
+  </div>
+
+  <div class="campos">
+    <div class="campos solo" data-solo="titular ultima" style="margin:0">
+      <label class="campo"><span>Titular</span><input type="text" data-k="titular" placeholder="Corto y directo: entra en dos líneas"></label>
+      <label class="campo"><span>Bajada (opcional)</span><input type="text" data-k="bajada" placeholder="El dato que completa el titular"></label>
+    </div>
+    <div class="campos solo" data-solo="persona" style="margin:0">
+      <label class="campo"><span>Nombre</span><input type="text" data-k="nombre" placeholder="Nombre y apellido"></label>
+      <label class="campo"><span>Cargo</span><input type="text" data-k="cargo" placeholder="Cargo o institución"></label>
+    </div>
+    <div class="fila">
+      <label class="campo"><span>Lugar (pestaña · vacío = sin pestaña)</span><input type="text" data-k="lugar" placeholder="Rancagua"></label>
+      <label class="check" style="flex:none"><input type="checkbox" data-k="vivo"> Punto rojo de en vivo</label>
+    </div>
+  </div>
+
+  <div class="acciones">
+    <button class="btn principal" id="b-mostrar">Mostrar al aire</button>
+    <button class="btn" id="b-ocultar">Ocultar</button>
+    <button class="btn" id="b-actualizar" title="Aplica los textos sin repetir la animación">Actualizar texto</button>
+  </div>
+
+  <div class="rotulo" style="margin:14px 0 8px">Guardados</div>
+  <div class="guardados" id="guardados"></div>
+  <div class="acciones" style="margin-top:-8px"><button class="btn chico" id="b-guardar">+ Guardar esta placa</button></div>
+
+  <section class="caja">
+    <h2>Cintillo, reloj y mosca</h2>
+    <label class="campo"><span>Noticias del cintillo · una por línea</span><textarea data-k="items" rows="4"></textarea></label>
+    <div class="fila" style="margin-top:12px">
+      <label class="campo"><span>Edición junto al reloj</span><select data-k="edicion">
+        <option value="auto">Automática según la hora</option>
+        <option value="primera">Primera Edición</option>
+        <option value="mediodia">Edición Mediodía</option>
+        <option value="central">Edición Central</option>
+        <option value="finde">Fin de Semana</option>
+      </select></label>
+      <label class="campo"><span>Velocidad · <b id="v-vel"></b></span><input type="range" data-k="vel" min="50" max="220" step="10"></label>
+    </div>
+    <div class="acciones" style="margin-top:14px">
+      <button class="btn" id="b-cintillo">Cintillo: —</button>
+      <button class="btn" id="b-mosca">Mosca: —</button>
+      <button class="btn" id="b-act-cintillo">Actualizar cintillo</button>
+    </div>
+    <p class="nota">El cintillo y la mosca (EN VIVO · 105.5) van en otra fuente y quedan fijos al aire. Cuando el cintillo está oculto, la placa baja al borde.</p>
+  </section>
+
+  <section class="caja">
+    <h2>Ajustes</h2>
+    <div class="fila">
+      <label class="campo"><span>Entrada · <b id="v-duracion"></b></span><input type="range" data-k="duracion" min="0.5" max="1.8" step="0.1"></label>
+      <label class="campo" style="max-width:260px"><span>Ocultar sola después de (s) · 0 = manual</span><input type="number" data-k="auto" min="0" max="120" step="1"></label>
+    </div>
+  </section>
+
+  <section class="caja">
+    <h2>Conexión con OBS <span class="chip" id="chip-ws"><i></i><span>Sin conectar</span></span></h2>
+    <div class="fila">
+      <label class="campo" style="max-width:120px"><span>Puerto</span><input type="text" id="ws-puerto" value="4455"></label>
+      <label class="campo"><span>Contraseña</span><input type="password" id="ws-clave" placeholder="la del servidor WebSocket de OBS"></label>
+      <button class="btn" id="b-conectar" style="flex:none">Conectar</button>
+    </div>
+    <div class="fila" style="margin-top:12px">
+      <label class="campo"><span>Fuente de la placa (gc-noticias.html)</span><select id="ws-fuente"></select></label>
+      <label class="campo"><span>Fuente base (gc-noticias.html?modo=base)</span><select id="ws-base"></select></label>
+    </div>
+    <div class="aviso" id="ws-msg"></div>
+    <p class="nota">Sin conexión, el panel igual sirve para preparar textos: copia esta dirección en la fuente de la placa.</p>
+    <p class="nota" style="margin-top:6px"><code id="url-actual"></code></p>
+  </section>
+
+  <section class="caja">
+    <h2>Cómo se usa</h2>
+    <ol class="pasos">
+      <li>En OBS agrega una <b>Fuente de navegador</b> de 1920 × 1080 con el archivo local <code>gc-noticias.html</code>. Desmarca «Apagar la fuente cuando no sea visible».</li>
+      <li>Agrega otra fuente de navegador, con «Archivo local» desmarcado y la URL <code>file:///…/gc-noticias.html?modo=base</code>, para el cintillo y la mosca.</li>
+      <li>Abre este panel como acoplable: <b>Acoplables → Acoplables de navegador personalizados</b>, con la ruta de <code>panel-noticias.html</code>.</li>
+      <li>En OBS: <b>Herramientas → Configuración del servidor WebSocket → Habilitar</b>. Copia la contraseña aquí y pulsa <b>Conectar</b>.</li>
+      <li>Escribe y pulsa <b>Mostrar al aire</b>. <b>Ocultar</b> la saca con su animación. <b>Actualizar texto</b> corrige sin repetir la entrada.</li>
+    </ol>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var CLAVE = 'noticias.gc.panel', CLAVE_WS = 'noticias.gc.ws', CLAVE_G = 'noticias.gc.guardados';
+  var ARCHIVO = 'gc-noticias.html';
+  var $ = function (id) { return document.getElementById(id); };
+  var leer = function (k, def) { try { return JSON.parse(localStorage.getItem(k)) || def; } catch (e) { return def; } };
+  var grabar = function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+
+  // ---------- estado ----------
+  var S = Object.assign({
+    placa: 'titular', lugar: 'Rancagua', vivo: true,
+    titular: 'Corte de agua afecta a 12 mil hogares del centro', bajada: 'Essbio estima reponer el servicio a las 18:00 horas',
+    nombre: 'Roberto Rojas', cargo: 'Conductor · Emerge Noticias',
+    items: 'Ruta 5 Sur: tránsito lento a la altura de Graneros\nPronostican lluvia para el jueves en O\'Higgins\nO\'Higgins recibe a Colo-Colo el sábado en El Teniente',
+    edicion: 'auto', vel: 110, cintillo: true, mosca: true,
+    duracion: 0.9, auto: 0, fondo: 'foto',
+  }, leer(CLAVE, {}));
+  var alAire = false, temporizador = 0;
+  var POR_PLACA = { titular: ['titular', 'bajada', 'lugar'], ultima: ['titular', 'bajada', 'lugar'], persona: ['nombre', 'cargo', 'lugar'] };
+  var guardados = leer(CLAVE_G, [
+    { placa: 'persona', nombre: 'Roberto Rojas', cargo: 'Conductor · Emerge Noticias', lugar: '' },
+    { placa: 'titular', titular: 'Corte de agua afecta a 12 mil hogares del centro', bajada: 'Essbio estima reponer el servicio a las 18:00 horas', lugar: 'Rancagua' },
+  ]);
+
+  function itemsUrl() { return String(S.items || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean).join('|'); }
+
+  // Parámetros de la placa. modo: 'entra' | 'quieto' | 'sale'
+  function parametros(modo, extra) {
+    var q = new URLSearchParams();
+    q.set('placa', S.placa);
+    POR_PLACA[S.placa].forEach(function (k) { if (S[k] !== '' && S[k] != null) q.set(k, S[k]); });
+    if (!S.vivo) q.set('vivo', '0');
+    if (!S.cintillo) q.set('cintillo', '0');
+    q.set('duracion', S.duracion);
+    if (modo === 'quieto') q.set('anim', '0');
+    if (modo === 'sale') q.set('salir', '1');
+    Object.keys(extra || {}).forEach(function (k) { q.set(k, extra[k]); });
+    q.set('n', Date.now());
+    return q.toString();
+  }
+  // Parámetros de la fuente base (cintillo + mosca)
+  function parametrosBase(entra, salir) {
+    var q = new URLSearchParams();
+    q.set('modo', 'base');
+    q.set('cintillo', S.cintillo ? '1' : '0');
+    q.set('mosca', S.mosca ? '1' : '0');
+    q.set('items', itemsUrl());
+    q.set('edicion', S.edicion);
+    q.set('vel', S.vel);
+    q.set('entra', entra || 'nada');
+    if (salir) q.set('salir', salir);
+    q.set('n', Date.now());
+    return q.toString();
+  }
+
+  // ---------- vista previa: todo junto ----------
+  var previa = $('previa'), espera = 0;
+  function verPrevia(modo) {
+    var p = new URLSearchParams(parametros(modo, { fondo: S.fondo, modo: 'todo' }));
+    p.set('mosca', S.mosca ? '1' : '0'); p.set('items', itemsUrl()); p.set('edicion', S.edicion); p.set('vel', S.vel);
+    if (modo === 'sale') { p.delete('salir'); p.set('visible', '0'); }
+    previa.src = ARCHIVO + '?' + p.toString();
+  }
+  function previaPronto() { clearTimeout(espera); espera = setTimeout(function () { verPrevia('quieto'); }, 260); }
+
+  // ---------- interfaz ----------
+  function pintar() {
+    document.querySelectorAll('.tab').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.placa === S.placa); });
+    document.querySelectorAll('.solo').forEach(function (c) { c.classList.toggle('on', c.dataset.solo.split(' ').indexOf(S.placa) >= 0); });
+    document.querySelectorAll('[data-k]').forEach(function (el) { if (el.type === 'checkbox') el.checked = !!S[el.dataset.k]; else if (document.activeElement !== el) el.value = S[el.dataset.k]; });
+    $('v-duracion').textContent = (+S.duracion).toFixed(1) + ' s';
+    $('v-vel').textContent = S.vel + ' px/s';
+    document.querySelectorAll('#seg-fondo button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === S.fondo); });
+    var chip = $('chip-aire'); chip.className = 'chip' + (alAire ? ' aire' : ''); chip.lastElementChild.textContent = alAire ? 'Al aire' : 'Oculto';
+    var bc = $('b-cintillo'); bc.textContent = S.cintillo ? 'Cintillo: al aire' : 'Cintillo: oculto'; bc.classList.toggle('encendido', S.cintillo);
+    var bm = $('b-mosca'); bm.textContent = S.mosca ? 'Mosca: al aire' : 'Mosca: oculta'; bm.classList.toggle('encendido', S.mosca);
+    $('url-actual').textContent = ARCHIVO + '?' + parametros('entra').replace(/&n=\d+$/, '');
+    pintarGuardados();
+  }
+  function pintarGuardados() {
+    var caja = $('guardados'); caja.textContent = '';
+    guardados.forEach(function (g, i) {
+      var d = document.createElement('span'); d.className = 'guardado' + (g.placa === 'ultima' ? ' ultima' : '');
+      var b = document.createElement('button'); b.textContent = etiqueta(g); b.title = 'Cargar esta placa';
+      b.onclick = function () { Object.assign(S, g); guardar(); pintar(); verPrevia('quieto'); };
+      var x = document.createElement('button'); x.className = 'x'; x.textContent = '×'; x.setAttribute('aria-label', 'Borrar ' + etiqueta(g));
+      x.onclick = function () { guardados.splice(i, 1); grabar(CLAVE_G, guardados); pintarGuardados(); };
+      d.appendChild(b); d.appendChild(x); caja.appendChild(d);
+    });
+  }
+  function etiqueta(g) {
+    var t = g.placa === 'persona' ? g.nombre : (g.placa === 'ultima' ? '⚡ ' : '') + g.titular;
+    t = String(t || '(vacío)'); return t.length > 38 ? t.slice(0, 37) + '…' : t;
+  }
+  function guardar() { grabar(CLAVE, S); }
+
+  document.querySelectorAll('.tab').forEach(function (b) { b.onclick = function () { S.placa = b.dataset.placa; guardar(); pintar(); verPrevia('entra'); }; });
+  var deBase = { items: 1, edicion: 1, vel: 1 };
+  document.querySelectorAll('[data-k]').forEach(function (el) {
+    el.addEventListener('input', function () {
+      var k = el.dataset.k; S[k] = el.type === 'checkbox' ? el.checked : el.type === 'range' || el.type === 'number' ? Number(el.value) : el.value;
+      guardar(); pintar(); previaPronto();
+    });
+  });
+  document.querySelectorAll('#seg-fondo button').forEach(function (b) { b.onclick = function () { S.fondo = b.dataset.v; guardar(); pintar(); verPrevia('quieto'); }; });
+  $('b-guardar').onclick = function () {
+    var g = { placa: S.placa }; POR_PLACA[S.placa].forEach(function (k) { g[k] = S[k]; });
+    guardados.push(g); grabar(CLAVE_G, guardados); pintarGuardados();
+  };
+
+  // ---------- acciones de la placa ----------
+  function mostrar() {
+    alAire = true; pintar(); verPrevia('entra');
+    obsMostrar('entra');
+    clearTimeout(temporizador);
+    if (+S.auto > 0) temporizador = setTimeout(ocultar, S.auto * 1000);
+  }
+  function actualizar() { verPrevia('quieto'); if (alAire) obsMostrar('quieto'); }
+  function ocultar() {
+    clearTimeout(temporizador);
+    if (!alAire) { verPrevia('quieto'); return; }
+    alAire = false; pintar(); verPrevia('sale');
+    obsOcultar();
+  }
+  $('b-mostrar').onclick = mostrar; $('b-ocultar').onclick = ocultar; $('b-actualizar').onclick = actualizar;
+
+  // ---------- cintillo y mosca ----------
+  function cambiarBase(cual) {             // cual: 'cintillo' | 'mosca'
+    var prender = !S[cual];
+    if (prender) { S[cual] = true; guardar(); pintar(); verPrevia('quieto'); obsBase(cual, ''); }
+    else {
+      obsBase('nada', cual);               // primero sale animado...
+      setTimeout(function () { S[cual] = false; guardar(); pintar(); verPrevia('quieto'); obsBase('nada', ''); }, 650);   // ...y después se quita
+    }
+    if (cual === 'cintillo' && alAire) setTimeout(function () { obsMostrar('quieto'); }, prender ? 0 : 700);   // la placa sube o baja
+  }
+  $('b-cintillo').onclick = function () { cambiarBase('cintillo'); };
+  $('b-mosca').onclick = function () { cambiarBase('mosca'); };
+  $('b-act-cintillo').onclick = function () { verPrevia('quieto'); obsBase('nada', ''); };
+
+  // ---------- OBS por WebSocket (obs-websocket 5) ----------
+  var ws = null, pend = {}, rid = 0, wsOk = false;
+  var conf = leer(CLAVE_WS, { puerto: '4455', clave: '', fuente: '', base: '' });
+  $('ws-puerto').value = conf.puerto || '4455'; $('ws-clave').value = conf.clave || '';
+  function estadoWs(tipo, texto, msg) {
+    var c = $('chip-ws'); c.className = 'chip' + (tipo ? ' ' + tipo : ''); c.lastElementChild.textContent = texto;
+    $('ws-msg').textContent = msg || '';
+  }
+  function sha(txt) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt)).then(function (buf) { return btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(buf)))); });
+  }
+  function pedir(tipo, datos) {
+    return new Promise(function (ok, mal) {
+      if (!ws || ws.readyState !== 1 || !wsOk) return mal(new Error('sin conexión'));
+      var id = 'r' + (++rid); pend[id] = { ok: ok, mal: mal };
+      ws.send(JSON.stringify({ op: 6, d: { requestType: tipo, requestId: id, requestData: datos || {} } }));
+      setTimeout(function () { if (pend[id]) { delete pend[id]; mal(new Error('OBS no respondió')); } }, 4000);
+    });
+  }
+  function conectar() {
+    if (ws) { try { ws.close(); } catch (e) {} }
+    wsOk = false; pend = {};
+    conf.puerto = $('ws-puerto').value.trim() || '4455'; conf.clave = $('ws-clave').value; grabar(CLAVE_WS, conf);
+    estadoWs('espera', 'Conectando');
+    try { ws = new WebSocket('ws://127.0.0.1:' + conf.puerto); } catch (e) { return estadoWs('', 'Sin conectar', 'No se pudo abrir el puerto ' + conf.puerto + '.'); }
+    var mio = ws;
+    ws.onerror = function () { if (ws === mio) estadoWs('', 'Sin conectar', 'OBS no responde. Revisa Herramientas → Configuración del servidor WebSocket y que el puerto sea ' + conf.puerto + '.'); };
+    ws.onclose = function (ev) {
+      if (ws !== mio) return;
+      var era = wsOk; wsOk = false;
+      if (ev.code === 4009) estadoWs('', 'Sin conectar', 'Contraseña incorrecta.');
+      else if (era) estadoWs('', 'Sin conectar', 'Se cerró la conexión con OBS.');
+    };
+    ws.onmessage = function (ev) {
+      var m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+      if (m.op === 0) {
+        var d = { rpcVersion: 1, eventSubscriptions: 0 };
+        var auth = m.d && m.d.authentication;
+        if (!auth) return mio.send(JSON.stringify({ op: 1, d: d }));
+        if (!conf.clave) return estadoWs('', 'Sin conectar', 'OBS pide contraseña: cópiala desde la configuración del servidor WebSocket.');
+        sha(conf.clave + auth.salt).then(function (secreto) { return sha(secreto + auth.challenge); }).then(function (r) { d.authentication = r; mio.send(JSON.stringify({ op: 1, d: d })); });
+      } else if (m.op === 2) {
+        wsOk = true; estadoWs('ok', 'Conectado'); cargarFuentes();
+      } else if (m.op === 7) {
+        var p = pend[m.d.requestId]; if (!p) return; delete pend[m.d.requestId];
+        if (m.d.requestStatus && m.d.requestStatus.result) p.ok(m.d.responseData || {}); else p.mal(new Error((m.d.requestStatus || {}).comment || 'OBS rechazó la orden'));
+      }
+    };
+  }
+  /* Solo se ofrecen fuentes de navegador que apunten a gc-noticias.html: así el panel nunca le cambia
+     la dirección a otra fuente. Las que tienen ?modo=base van a la lista de la fuente base. */
+  var direcciones = {};
+  function direccionDe(s) { return String((s.is_local_file !== false && s.local_file) || s.url || s.local_file || ''); }
+  function esGC(dir) { return /(^|[\/\\])(gc|base)-noticias\.html(\?|#|$)/i.test(dir); }
+  function esBase(dir) { return esGC(dir) && (/(^|[\/\\])base-noticias\.html/i.test(dir) || /[?&]modo=base/i.test(dir)); }
+  function cargarFuentes() {
+    pedir('GetInputList', {}).then(function (r) {
+      var nombres = (r.inputs || []).filter(function (i) { return String(i.inputKind || '').indexOf('browser') >= 0; }).map(function (i) { return i.inputName; });
+      return Promise.all(nombres.map(function (n) {
+        return pedir('GetInputSettings', { inputName: n }).then(function (x) { direcciones[n] = direccionDe(x.inputSettings || {}); }, function () { direcciones[n] = ''; });
+      })).then(function () { return nombres; });
+    }).then(function (nombres) {
+      var placas = nombres.filter(function (n) { return esGC(direcciones[n]) && !esBase(direcciones[n]); });
+      var bases = nombres.filter(function (n) { return esBase(direcciones[n]); });
+      llenar($('ws-fuente'), placas, conf.fuente, false); llenar($('ws-base'), bases, conf.base, true);
+      conf.fuente = $('ws-fuente').value; conf.base = $('ws-base').value; grabar(CLAVE_WS, conf);
+      if (!placas.length) estadoWs('ok', 'Conectado', 'No encontré ninguna fuente de navegador que apunte a gc-noticias.html. Agrégala en OBS (Archivo local → gc-noticias.html) y vuelve a pulsar Conectar.');
+      else estadoWs('ok', 'Conectado', '');
+      if (conf.base) obsBase('todo', '');          // deja el cintillo y la mosca como dice el panel
+    }).catch(function () { estadoWs('ok', 'Conectado', 'No se pudo leer la lista de fuentes.'); });
+  }
+  function llenar(sel, nombres, actual, conVacio) {
+    sel.textContent = '';
+    (conVacio ? [''] : []).concat(nombres).forEach(function (n) { var o = document.createElement('option'); o.value = n; o.textContent = n || '— ninguna —'; sel.appendChild(o); });
+    sel.value = nombres.indexOf(actual) >= 0 ? actual : (conVacio && nombres.length !== 1 ? '' : (nombres[0] || ''));
+  }
+  $('ws-fuente').onchange = function () { conf.fuente = this.value; grabar(CLAVE_WS, conf); };
+  $('ws-base').onchange = function () { conf.base = this.value; grabar(CLAVE_WS, conf); if (conf.base) obsBase('todo', ''); };
+  $('b-conectar').onclick = conectar;
+
+  function urlBase(fuente) {
+    return pedir('GetInputSettings', { inputName: fuente }).then(function (r) {
+      var s = r.inputSettings || {}, dir = direccionDe(s);
+      if (!esGC(dir)) throw new Error('la fuente «' + fuente + '» no apunta a gc-noticias.html');
+      var archivo = function (ruta) { return 'file:///' + encodeURI(String(ruta).replace(/\\/g, '/').replace(/^\/+/, '')); };
+      if (s.local_file && s.is_local_file !== false) return archivo(s.local_file);
+      if (s.url) return String(s.url).split('?')[0].split('#')[0];
+      return archivo(s.local_file);
+    });
+  }
+  function itemsDeEscena(fuente) {
+    return pedir('GetSceneList', {}).then(function (r) {
+      var escenas = (r.scenes || []).map(function (e) { return e.sceneName; });
+      return Promise.all(escenas.map(function (e) {
+        return pedir('GetSceneItemId', { sceneName: e, sourceName: fuente }).then(function (it) { return { sceneName: e, sceneItemId: it.sceneItemId }; }, function () { return null; });
+      }));
+    }).then(function (items) {
+      items = items.filter(Boolean);
+      if (!items.length) throw new Error('la fuente «' + fuente + '» no está en ninguna escena');
+      return items;
+    });
+  }
+  function encender(fuente, si) {
+    return itemsDeEscena(fuente).then(function (items) {
+      return Promise.all(items.map(function (it) { return pedir('SetSceneItemEnabled', { sceneName: it.sceneName, sceneItemId: it.sceneItemId, sceneItemEnabled: !!si }); }));
+    });
+  }
+  function ponerUrl(fuente, query) {
+    return urlBase(fuente).then(function (base) {
+      return pedir('SetInputSettings', { inputName: fuente, inputSettings: { is_local_file: false, url: base + '?' + query }, overlay: true });
+    });
+  }
+  function fallo(e) { estadoWs(wsOk ? 'ok' : '', wsOk ? 'Conectado' : 'Sin conectar', 'No se pudo actualizar OBS: ' + e.message + '.'); }
+  function obsMostrar(modo) {
+    if (!wsOk) return;
+    if (!conf.fuente) return estadoWs('ok', 'Conectado', 'Elige la fuente de la placa (una fuente de navegador con gc-noticias.html).');
+    ponerUrl(conf.fuente, parametros(modo)).then(function () { return encender(conf.fuente, true); }).then(function () { $('ws-msg').textContent = ''; }, fallo);
+  }
+  var apagar = 0;
+  function obsOcultar() {
+    if (!wsOk || !conf.fuente) return;
+    clearTimeout(apagar);
+    ponerUrl(conf.fuente, parametros('sale')).then(function () {
+      apagar = setTimeout(function () { if (!alAire) encender(conf.fuente, false).catch(function () {}); }, 1000);
+    }, fallo);
+  }
+  function obsBase(entra, salir) {
+    if (!wsOk || !conf.base) return;
+    if (!S.cintillo && !S.mosca && !salir) { encender(conf.base, false).catch(fallo); return; }
+    ponerUrl(conf.base, parametrosBase(entra, salir)).then(function () { return encender(conf.base, true); }, fallo).catch(fallo);
+  }
+
+  pintar(); verPrevia('quieto');
+  if (conf.clave || conf.fuente) conectar();
+  window.__gc = { S: S, parametros: parametros, parametrosBase: parametrosBase, mostrar: mostrar, ocultar: ocultar };
+})();
+</script>
+</body>
+</html>

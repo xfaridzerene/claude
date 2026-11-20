@@ -1,0 +1,9 @@
+01 - Estás escuchando Emerge FM, ciento | Toma 1: Estás escuchando Emerge FM 105.5, lo que suena Emerge.
+01 - Estás escuchando Emerge FM, ciento | Toma 2: Estás escuchando Emerge FM 105.5. Lo que suena, emerge.
+13 - Música, noticias y programas en vivo, | Toma 1: Música, noticias y programación en vivo todos los días. Emerge FM. Emerge FM 105.5. Lo que suena, emerge.
+13 - Música, noticias y programas en vivo, | Toma 2: Música, noticias y programas en vivo todos los días. Emerge FM 105.5. Lo que suena, emerge.
+14 - Gracias por estar al otro lado | Toma 1: Gracias por estar al otro lado. Seguimos juntos en Emerge FM 105.5.
+14 - Gracias por estar al otro lado | Toma 2: Gracias por estar al otro lado. Seguimos juntos en Emerge FM 105.5.
+18 - En la casa o en el trabajo...donde | Toma 1: en la casa o en el trabajo. Donde estés, siempre emerge FM.
+18 - En la casa o en el trabajo...donde | Toma 2: En la casa o en el trabajo, donde estés, siempre emerge FM.
+

@@ -1,0 +1,68 @@
+GC «LA CIUDAD DE LA FURIA» PARA OBS
+===================================
+
+Esta carpeta funciona sin internet. Hay que mantener todo junto: gc-furia.html, panel-furia.html y las
+carpetas «img» y «fuentes». Si falta «img», no se ve el logo; si falta «fuentes», cambia la letra.
+
+
+1. DÓNDE DEJAR LA CARPETA
+-------------------------
+Descomprime el ZIP y deja la carpeta así:
+
+    C:\GC-Furia\
+
+(dentro deben quedar gc-furia.html, panel-furia.html, img y fuentes; no una carpeta GC-Furia dentro de otra).
+Con esa ruta, las direcciones de abajo sirven tal cual. Si la dejas en otro lugar, cambia «C:/GC-Furia» por
+tu ruta y escribe los espacios como %20.
+
+
+2. LA PLACA
+-----------
+En la escena del programa: Fuentes → + → Navegador → nombre «GC FURIA».
+  - Marca «Archivo local» → Examinar → C:\GC-Furia\gc-furia.html
+  - Ancho 1920, Alto 1080
+  - Desmarca «Apagar la fuente cuando no sea visible»
+  - Desmarca «Actualizar navegador cuando la escena se active»
+Deja «GC FURIA» arriba de la cámara en la lista de fuentes.
+Para usarla en otra escena: + → Navegador → «Añadir existente» → GC FURIA.
+
+
+3. LA MOSCA (opcional: logo, EN VIVO y hora en la esquina)
+---------------------------------------------------------
+Otra fuente de navegador, nombre «MOSCA FURIA».
+  - «Archivo local» DESMARCADO
+  - URL:  file:///C:/GC-Furia/gc-furia.html?modo=mosca
+  - Ancho 1920, Alto 1080, y desmarca las mismas dos casillas.
+
+
+4. SERVIDOR WEBSOCKET
+---------------------
+Herramientas → Configuración del servidor WebSocket → marca «Habilitar servidor WebSocket».
+Puerto 4455. Pulsa «Mostrar información de conexión» y copia la contraseña.
+
+
+5. EL PANEL DE CONTROL
+----------------------
+Menú Acoplables → Acoplables de navegador personalizados:
+  - Nombre: Control GC Furia
+  - URL:    file:///C:/GC-Furia/panel-furia.html
+  - Aplicar
+Al final del panel, en «Conexión con OBS», pega la contraseña y pulsa «Conectar».
+Debe aparecer «GC FURIA» (y la mosca, si la creaste).
+
+
+USO
+---
+  - Elige la placa (Invitado, Tema, Cita o Redes) y escribe.
+  - «Mostrar al aire» la hace entrar; «Ocultar» la saca.
+  - «Actualizar texto» corrige una placa que ya está al aire sin repetir la entrada.
+  - «Guardados»: placas listas; un clic las carga.
+  - Con el Modo Estudio, la placa sale al aire cuando esa escena pasa a Programa.
+
+
+SI ALGO NO SE VE
+----------------
+  - Logo o rayos no aparecen: falta la carpeta «img» junto a gc-furia.html.
+  - Cambiaste archivos: en las propiedades de la fuente pulsa «Actualizar caché de la página actual»;
+    en el panel, clic derecho → Actualizar.
+  - El panel no encuentra la placa: la fuente debe apuntar a gc-furia.html (paso 2).

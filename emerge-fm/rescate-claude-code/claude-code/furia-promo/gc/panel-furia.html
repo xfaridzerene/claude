@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control GC · La Ciudad de la Furia</title>
+<!--
+  Panel de control del GC de «La Ciudad de la Furia».
+  Se abre como acoplable de OBS (Acoplables → Acoplables de navegador personalizados) o en
+  cualquier navegador. Escribes los textos, miras la vista previa y pulsas «Mostrar al aire».
+
+  Usa el mismo mecanismo del GC de «Emerge tu mañana»: se conecta al servidor WebSocket de OBS
+  y le cambia la URL a la fuente de navegador que muestra gc-furia.html (los datos viajan como
+  parámetros de la URL). Al ocultar, la placa sale animada y después se apaga la fuente.
+-->
+<style>
+  @font-face { font-family: 'Unbounded'; src: url('fuentes/Unbounded-Variable.ttf') format('truetype'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Space Grotesk'; src: url('fuentes/SpaceGrotesk-Variable.ttf') format('truetype'); font-weight: 300 700; font-display: swap; }
+  :root { --negro: #07060a; --blanco: #fff; --rojo: #e0242c; --sombra: #7a0a13; --neon: #ff2b3d; --crema: #f7f1e3; --superficie: #17121a; --linea: #2f2630; --medio: #8C8C8C; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--negro); color: var(--blanco); font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 15px; line-height: 1.45; }
+  .app { max-width: 720px; margin: 0 auto; padding: 18px 18px 40px; }
+  h1, h2 { font-family: 'Unbounded', sans-serif; margin: 0; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  header img { height: 46px; width: auto; flex: none; filter: drop-shadow(3px 3px 0 var(--sombra)); }
+  header h1 { font-size: 17px; font-weight: 800; line-height: 1.15; margin-right: auto; }
+  header h1 small { display: block; font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--medio); }
+  .chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; border: 2px solid var(--linea); color: var(--medio); }
+  .chip i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .chip.ok { border-color: var(--crema); color: var(--crema); }
+  .chip.aire { border-color: var(--rojo); background: var(--rojo); color: var(--blanco); }
+  .chip.aire i { animation: late 1s steps(2, jump-none) infinite; }
+  .chip.espera { border-color: var(--neon); color: var(--neon); }
+  @keyframes late { to { opacity: 0.25; } }
+
+  /* vista previa */
+  .previa { position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; border: 2px solid var(--linea); background: #111; margin-bottom: 8px; }
+  .previa iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; }
+  .previa-pie { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; font-size: 12px; color: var(--medio); }
+  .previa-pie .seg { margin-left: auto; }
+
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .tab { border: 2px solid var(--linea); background: transparent; color: var(--blanco); border-radius: 999px; padding: 9px 18px; font: 700 14px 'Space Grotesk', sans-serif; cursor: pointer; }
+  .tab:hover { border-color: var(--rojo); }
+  .tab[aria-pressed="true"] { background: var(--rojo); border-color: var(--rojo); color: var(--blanco); }
+
+  .campos { display: none; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+  .campos.on { display: flex; }
+  label.campo { display: flex; flex-direction: column; gap: 6px; }
+  label.campo > span, .rotulo { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--neon); }
+  input[type="text"], input[type="password"], input[type="number"], textarea, select { width: 100%; background: var(--superficie); border: 2px solid var(--linea); border-radius: 12px; color: var(--blanco); font: 500 16px 'Space Grotesk', sans-serif; padding: 11px 14px; }
+  textarea { resize: vertical; min-height: 84px; }
+  input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible { outline: 3px solid var(--neon); outline-offset: 2px; }
+  input::placeholder, textarea::placeholder { color: #5d5d5d; }
+  .fila { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .fila > * { flex: 1; min-width: 130px; }
+
+  .acciones { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 6px 0 12px; }
+  .btn { border: 2px solid var(--linea); background: transparent; color: var(--blanco); border-radius: 999px; padding: 12px 20px; font: 700 14px 'Space Grotesk', sans-serif; cursor: pointer; }
+  .btn:hover { border-color: var(--blanco); }
+  .btn.principal { font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: 15px; background: var(--rojo); border-color: var(--rojo); color: var(--blanco); padding: 14px 26px; box-shadow: 5px 5px 0 var(--blanco); }
+  .btn.principal:hover { transform: translate(-1px, -1px); box-shadow: 6px 6px 0 var(--blanco); }
+  .btn.principal:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--blanco); }
+  .btn.chico { padding: 8px 14px; font-size: 13px; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .guardados { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .guardado { display: inline-flex; align-items: stretch; border: 2px solid var(--linea); border-radius: 999px; overflow: hidden; }
+  .guardado button { background: transparent; border: 0; color: var(--blanco); font: 500 13px 'Space Grotesk', sans-serif; padding: 7px 12px; cursor: pointer; }
+  .guardado button:hover { background: var(--superficie); }
+  .guardado button.x { color: var(--medio); border-left: 2px solid var(--linea); padding: 7px 10px; }
+
+  section.caja { background: var(--superficie); border-radius: 16px; padding: 16px 18px; margin-top: 16px; }
+  section.caja h2 { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  section.caja h2 .chip { margin-left: auto; }
+  section.caja input[type="text"], section.caja input[type="password"], section.caja input[type="number"], section.caja select { background: var(--negro); }
+  .aviso { font-size: 13px; color: #ffd0cc; background: rgba(224, 36, 44, 0.16); border-radius: 10px; padding: 9px 12px; margin-top: 10px; }
+  .aviso:empty { display: none; }
+  .nota { font-size: 13px; color: var(--medio); margin: 10px 0 0; }
+  .pasos { margin: 0; padding-left: 20px; color: #cfcfcf; font-size: 14px; }
+  .pasos li { margin-bottom: 8px; }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; color: var(--crema); word-break: break-all; }
+  input[type="range"] { width: 100%; accent-color: var(--rojo); }
+  label.check { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; padding-bottom: 12px; }
+  label.check input { width: 18px; height: 18px; accent-color: var(--rojo); }
+  .seg { display: inline-flex; border: 2px solid var(--linea); border-radius: 999px; overflow: hidden; }
+  .seg button { background: transparent; border: 0; color: var(--medio); font: 700 12px 'Space Grotesk', sans-serif; padding: 6px 12px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--blanco); color: var(--negro); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <img src="img/furia-letras.png" alt="">
+    <h1>Control GC<small>La Ciudad de la Furia</small></h1>
+    <span class="chip" id="chip-aire"><i></i><span>Oculto</span></span>
+  </header>
+
+  <div class="previa"><iframe id="previa" title="Vista previa de la placa"></iframe></div>
+  <div class="previa-pie">
+    <span>Vista previa: se actualiza mientras escribes.</span>
+    <span class="seg" id="seg-fondo" role="group" aria-label="Fondo de la vista previa">
+      <button data-v="foto" aria-pressed="true">Imagen</button><button data-v="cuadros" aria-pressed="false">Cuadros</button><button data-v="negro" aria-pressed="false">Negro</button>
+    </span>
+  </div>
+
+  <div class="tabs" role="group" aria-label="Tipo de placa">
+    <button class="tab" data-placa="nombre">Invitado</button>
+    <button class="tab" data-placa="tema">Tema</button>
+    <button class="tab" data-placa="cita">Cita</button>
+    <button class="tab" data-placa="redes">Redes</button>
+  </div>
+
+  <div class="campos" data-placa="nombre">
+    <label class="campo"><span>Nombre</span><input type="text" data-k="nombre" placeholder="Nombre del invitado"></label>
+    <label class="campo"><span>Cargo</span><input type="text" data-k="cargo" placeholder="Cargo o rol"></label>
+  </div>
+  <div class="campos" data-placa="tema">
+    <label class="campo"><span>Antetítulo</span><input type="text" data-k="temaKicker" placeholder="En vivo"></label>
+    <label class="campo"><span>Título</span><input type="text" data-k="tema" placeholder="Tema del bloque"></label>
+  </div>
+  <div class="campos" data-placa="cita">
+    <label class="campo"><span>Frase</span><textarea data-k="cita" rows="3" placeholder="Máximo dos o tres líneas"></textarea></label>
+    <label class="campo"><span>Autor</span><input type="text" data-k="citaAutor" placeholder="Quién lo dijo"></label>
+  </div>
+  <div class="campos" data-placa="redes">
+    <label class="campo"><span>Instagram</span><input type="text" data-k="redIg" placeholder="@emergefm"></label>
+    <label class="campo"><span>YouTube</span><input type="text" data-k="redYt" placeholder="Emerge FM"></label>
+    <label class="campo"><span>Web</span><input type="text" data-k="redWeb" placeholder="emergefm.cl"></label>
+  </div>
+
+  <div class="acciones">
+    <button class="btn principal" id="b-mostrar">Mostrar al aire</button>
+    <button class="btn" id="b-ocultar">Ocultar</button>
+    <button class="btn" id="b-actualizar" title="Aplica los textos sin repetir la animación">Actualizar texto</button>
+    <button class="btn" id="b-repetir">Repetir entrada</button>
+  </div>
+
+  <div class="rotulo" style="margin:14px 0 8px">Guardados</div>
+  <div class="guardados" id="guardados"></div>
+  <div class="acciones" style="margin-top:-8px"><button class="btn chico" id="b-guardar">+ Guardar esta placa</button></div>
+
+  <section class="caja">
+    <h2>Ajustes de la placa</h2>
+    <div class="fila">
+      <label class="campo"><span>Pestaña sobre la placa (vacío = sin pestaña)</span><input type="text" data-k="programa" placeholder="vacía: sin pestaña"></label>
+      <label class="campo" style="max-width:170px"><span>Posición</span><select data-k="pos"><option value="izq">Izquierda</option><option value="centro">Centro</option></select></label>
+    </div>
+    <div class="fila" style="margin-top:12px">
+      <label class="campo"><span>Entrada · <b id="v-duracion"></b></span><input type="range" data-k="duracion" min="0.4" max="2.5" step="0.1"></label>
+      <label class="campo"><span>Tamaño · <b id="v-escala"></b></span><input type="range" data-k="escala" min="0.7" max="1.3" step="0.05"></label>
+      <label class="campo"><span>Margen · <b id="v-margen"></b></span><input type="range" data-k="margen" min="30" max="160" step="5"></label>
+    </div>
+    <div class="fila" style="margin-top:12px">
+      <label class="campo" style="max-width:260px"><span>Ocultar sola después de (s) · 0 = manual</span><input type="number" data-k="auto" min="0" max="120" step="1"></label>
+      <label class="check" style="flex:none"><input type="checkbox" data-k="rayos"> Rayos chispeando al lado</label>
+    </div>
+  </section>
+
+  <section class="caja">
+    <h2>Conexión con OBS <span class="chip" id="chip-ws"><i></i><span>Sin conectar</span></span></h2>
+    <div class="fila">
+      <label class="campo" style="max-width:120px"><span>Puerto</span><input type="text" id="ws-puerto" value="4455"></label>
+      <label class="campo"><span>Contraseña</span><input type="password" id="ws-clave" placeholder="la del servidor WebSocket de OBS"></label>
+      <button class="btn" id="b-conectar" style="flex:none">Conectar</button>
+    </div>
+    <div class="fila" style="margin-top:12px">
+      <label class="campo"><span>Fuente de la placa (con gc-furia.html)</span><select id="ws-fuente"></select></label>
+      <label class="campo"><span>Fuente de la mosca (opcional)</span><select id="ws-mosca"></select></label>
+      <button class="btn" id="b-mosca" style="flex:none" disabled>Mosca: —</button>
+    </div>
+    <div class="aviso" id="ws-msg"></div>
+    <div id="ws-reparar"></div>
+    <p class="nota">Sin conexión, el panel igual sirve para preparar textos: copia esta dirección en la fuente de navegador de OBS.</p>
+    <p class="nota" style="margin-top:6px"><code id="url-actual"></code></p>
+  </section>
+
+  <section class="caja">
+    <h2>Cómo se usa</h2>
+    <ol class="pasos">
+      <li>En OBS agrega una <b>Fuente de navegador</b> de 1920 × 1080 con el archivo local <code>gc-furia.html</code> de esta carpeta. Desmarca «Apagar la fuente cuando no sea visible».</li>
+      <li>Opcional: agrega otra fuente de navegador con <code>gc-furia.html?modo=mosca</code> para la mosca del programa (logo, EN VIVO y hora).</li>
+      <li>Abre este panel como acoplable: <b>Acoplables → Acoplables de navegador personalizados</b>, con la ruta de <code>panel-furia.html</code>.</li>
+      <li>En OBS: <b>Herramientas → Configuración del servidor WebSocket → Habilitar</b>. Copia la contraseña aquí y pulsa <b>Conectar</b>: el panel encuentra sola la fuente que tiene <code>gc-furia.html</code> (si hay varias, elige cuál).</li>
+      <li>Escribe, revisa la vista previa y pulsa <b>Mostrar al aire</b>. <b>Ocultar</b> la saca con su animación. <b>Actualizar texto</b> corrige un texto que ya está al aire sin repetir la entrada.</li>
+    </ol>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var CLAVE = 'furia.gc.panel', CLAVE_WS = 'furia.gc.ws', CLAVE_G = 'furia.gc.guardados';
+  var $ = function (id) { return document.getElementById(id); };
+  var leer = function (k, def) { try { return JSON.parse(localStorage.getItem(k)) || def; } catch (e) { return def; } };
+  var grabar = function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+
+  // ---------- estado ----------
+  var S = Object.assign({
+    placa: 'nombre', nombre: 'Kaco López', cargo: 'Conductor · La Ciudad de la Furia',
+    temaKicker: 'Clásico del día', tema: 'Soda Stereo · En la ciudad de la furia', cita: '', citaAutor: '',
+    redIg: '@emergefm', redYt: 'Emerge FM', redWeb: 'emergefm.cl',
+    programa: '', pos: 'izq', duracion: 1, escala: 1, margen: 80, auto: 0, fondo: 'foto', rayos: true,
+  }, leer(CLAVE, {}));
+  if (S.programa === 'Emerge FM · 105.5') S.programa = '';   // la pestaña de antes ya no va
+  var alAire = false, temporizador = 0;
+  var POR_PLACA = { nombre: ['nombre', 'cargo'], tema: ['temaKicker', 'tema'], cita: ['cita', 'citaAutor'], redes: ['redIg', 'redYt', 'redWeb'] };
+  var guardados = leer(CLAVE_G, [
+    { placa: 'nombre', nombre: 'Kaco López', cargo: 'Conductor · La Ciudad de la Furia' },
+    { placa: 'tema', temaKicker: 'En vivo', tema: 'Rock y pop de los 80 y 90' },
+    { placa: 'tema', temaKicker: 'Lunes a viernes', tema: '18:00 - 20:00 · Emerge FM 105.5' },
+  ]);
+
+  // Parámetros de la URL de gc-furia.html. modo: 'entra' (con animación), 'quieto' (sin animar), 'sale' (animación de salida).
+  function parametros(modo, extra) {
+    var q = new URLSearchParams();
+    q.set('placa', S.placa);
+    POR_PLACA[S.placa].forEach(function (k) { if (S[k] !== '' && S[k] != null) q.set(k, S[k]); });
+    q.set('programa', S.programa || '');
+    if (S.pos !== 'izq') q.set('pos', S.pos);
+    q.set('duracion', S.duracion);
+    if (+S.escala !== 1) q.set('escala', S.escala);
+    if (+S.margen !== 80) q.set('margen', S.margen);
+    if (!S.rayos) q.set('rayos', '0');
+    if (modo === 'quieto') q.set('anim', '0');
+    if (modo === 'sale') q.set('salir', '1');
+    Object.keys(extra || {}).forEach(function (k) { q.set(k, extra[k]); });
+    q.set('n', Date.now());
+    return q.toString();
+  }
+
+  // ---------- vista previa ----------
+  var previa = $('previa'), espera = 0;
+  function verPrevia(modo) { previa.src = 'gc-furia.html?' + parametros(modo, { fondo: S.fondo }); }
+  function previaPronto() { clearTimeout(espera); espera = setTimeout(function () { verPrevia('quieto'); }, 220); }
+
+  // ---------- interfaz ----------
+  function pintar() {
+    document.querySelectorAll('.tab').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.placa === S.placa); });
+    document.querySelectorAll('.campos').forEach(function (c) { c.classList.toggle('on', c.dataset.placa === S.placa); });
+    document.querySelectorAll('[data-k]').forEach(function (el) { if (el.type === 'checkbox') el.checked = !!S[el.dataset.k]; else if (document.activeElement !== el) el.value = S[el.dataset.k]; });
+    $('v-duracion').textContent = (+S.duracion).toFixed(1) + ' s';
+    $('v-escala').textContent = Math.round(S.escala * 100) + ' %';
+    $('v-margen').textContent = S.margen + ' px';
+    document.querySelectorAll('#seg-fondo button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === S.fondo); });
+    var chip = $('chip-aire'); chip.className = 'chip' + (alAire ? ' aire' : ''); chip.lastElementChild.textContent = alAire ? 'Al aire' : 'Oculto';
+    $('url-actual').textContent = 'gc-furia.html?' + parametros('entra').replace(/&n=\d+$/, '');
+    pintarGuardados();
+  }
+  function pintarGuardados() {
+    var caja = $('guardados'); caja.textContent = '';
+    guardados.forEach(function (g, i) {
+      var d = document.createElement('span'); d.className = 'guardado';
+      var b = document.createElement('button'); b.textContent = etiqueta(g); b.title = 'Cargar esta placa';
+      b.onclick = function () { Object.assign(S, g); guardar(); pintar(); verPrevia('quieto'); };
+      var x = document.createElement('button'); x.className = 'x'; x.textContent = '×'; x.setAttribute('aria-label', 'Borrar ' + etiqueta(g));
+      x.onclick = function () { guardados.splice(i, 1); grabar(CLAVE_G, guardados); pintarGuardados(); };
+      d.appendChild(b); d.appendChild(x); caja.appendChild(d);
+    });
+  }
+  function etiqueta(g) {
+    var t = g.placa === 'nombre' ? g.nombre : g.placa === 'tema' ? g.tema : g.placa === 'cita' ? '“' + g.cita + '”' : 'Redes: ' + [g.redIg, g.redYt, g.redWeb].filter(Boolean).join(' · ');
+    t = String(t || '(vacío)'); return t.length > 34 ? t.slice(0, 33) + '…' : t;
+  }
+  function guardar() { grabar(CLAVE, S); }
+
+  document.querySelectorAll('.tab').forEach(function (b) { b.onclick = function () { S.placa = b.dataset.placa; guardar(); pintar(); verPrevia('entra'); }; });
+  document.querySelectorAll('[data-k]').forEach(function (el) {
+    el.addEventListener('input', function () {
+      var k = el.dataset.k; S[k] = el.type === 'checkbox' ? el.checked : el.type === 'range' || el.type === 'number' ? Number(el.value) : el.value;
+      guardar(); pintar(); previaPronto();
+    });
+  });
+  document.querySelectorAll('#seg-fondo button').forEach(function (b) { b.onclick = function () { S.fondo = b.dataset.v; guardar(); pintar(); verPrevia('quieto'); }; });
+  $('b-guardar').onclick = function () {
+    var g = { placa: S.placa }; POR_PLACA[S.placa].forEach(function (k) { g[k] = S[k]; });
+    guardados.push(g); grabar(CLAVE_G, guardados); pintarGuardados();
+  };
+
+  // ---------- acciones ----------
+  function mostrar() {
+    alAire = true; pintar(); verPrevia('entra');
+    obsMostrar('entra');
+    clearTimeout(temporizador);
+    if (+S.auto > 0) temporizador = setTimeout(ocultar, S.auto * 1000);
+  }
+  function actualizar() { verPrevia('quieto'); if (alAire) obsMostrar('quieto'); }
+  function ocultar() {
+    clearTimeout(temporizador);
+    if (!alAire) { verPrevia('quieto'); return; }
+    alAire = false; pintar(); verPrevia('sale');
+    obsOcultar();
+  }
+  $('b-mostrar').onclick = mostrar; $('b-repetir').onclick = mostrar; $('b-ocultar').onclick = ocultar; $('b-actualizar').onclick = actualizar;
+
+  // ---------- OBS por WebSocket (obs-websocket 5) ----------
+  var ws = null, pend = {}, rid = 0, wsOk = false, moscaOn = null;
+  var conf = leer(CLAVE_WS, { puerto: '4455', clave: '', fuente: '', mosca: '' });
+  $('ws-puerto').value = conf.puerto || '4455'; $('ws-clave').value = conf.clave || '';
+  function estadoWs(tipo, texto, msg) {
+    var c = $('chip-ws'); c.className = 'chip' + (tipo ? ' ' + tipo : ''); c.lastElementChild.textContent = texto;
+    $('ws-msg').textContent = msg || '';
+  }
+  function sha(txt) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt)).then(function (buf) { return btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(buf)))); });
+  }
+  function pedir(tipo, datos) {
+    return new Promise(function (ok, mal) {
+      if (!ws || ws.readyState !== 1 || !wsOk) return mal(new Error('sin conexión'));
+      var id = 'r' + (++rid); pend[id] = { ok: ok, mal: mal };
+      ws.send(JSON.stringify({ op: 6, d: { requestType: tipo, requestId: id, requestData: datos || {} } }));
+      setTimeout(function () { if (pend[id]) { delete pend[id]; mal(new Error('OBS no respondió')); } }, 4000);
+    });
+  }
+  function conectar() {
+    if (ws) { try { ws.close(); } catch (e) {} }
+    wsOk = false; pend = {};
+    conf.puerto = $('ws-puerto').value.trim() || '4455'; conf.clave = $('ws-clave').value; grabar(CLAVE_WS, conf);
+    estadoWs('espera', 'Conectando');
+    try { ws = new WebSocket('ws://127.0.0.1:' + conf.puerto); } catch (e) { return estadoWs('', 'Sin conectar', 'No se pudo abrir el puerto ' + conf.puerto + '.'); }
+    var mio = ws;
+    ws.onerror = function () { if (ws === mio) estadoWs('', 'Sin conectar', 'OBS no responde. Revisa Herramientas → Configuración del servidor WebSocket y que el puerto sea ' + conf.puerto + '.'); };
+    ws.onclose = function (ev) {
+      if (ws !== mio) return;
+      var era = wsOk; wsOk = false;
+      if (ev.code === 4009) estadoWs('', 'Sin conectar', 'Contraseña incorrecta.');
+      else if (era) estadoWs('', 'Sin conectar', 'Se cerró la conexión con OBS.');
+    };
+    ws.onmessage = function (ev) {
+      var m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+      if (m.op === 0) {                                   // Hello
+        var d = { rpcVersion: 1, eventSubscriptions: 0 };
+        var auth = m.d && m.d.authentication;
+        if (!auth) return mio.send(JSON.stringify({ op: 1, d: d }));
+        if (!conf.clave) return estadoWs('', 'Sin conectar', 'OBS pide contraseña: cópiala desde la configuración del servidor WebSocket.');
+        sha(conf.clave + auth.salt).then(function (secreto) { return sha(secreto + auth.challenge); }).then(function (r) { d.authentication = r; mio.send(JSON.stringify({ op: 1, d: d })); });
+      } else if (m.op === 2) {                            // Identified
+        wsOk = true; estadoWs('ok', 'Conectado'); cargarFuentes();
+      } else if (m.op === 7) {                            // RequestResponse
+        var p = pend[m.d.requestId]; if (!p) return; delete pend[m.d.requestId];
+        if (m.d.requestStatus && m.d.requestStatus.result) p.ok(m.d.responseData || {}); else p.mal(new Error((m.d.requestStatus || {}).comment || 'OBS rechazó la orden'));
+      }
+    };
+  }
+  /* Solo se ofrecen fuentes de navegador que apunten a gc-furia.html: así el panel nunca le cambia la
+     dirección a otra fuente (un marcador, un widget). Las que usan ?modo=mosca van a la lista de la mosca. */
+  var direcciones = {};                               // nombre de fuente -> archivo o URL que tiene configurado
+  function direccionDe(s) { return String((s.is_local_file !== false && s.local_file) || s.url || s.local_file || ''); }
+  function esGC(dir) { return /(^|[\/\\])gc-furia\.html(\?|#|$)/i.test(dir); }
+  function esMosca(dir) { return esGC(dir) && /[?&]modo=mosca/i.test(dir); }
+  function cargarFuentes() {
+    pedir('GetInputList', {}).then(function (r) {
+      var nombres = (r.inputs || []).filter(function (i) { return String(i.inputKind || '').indexOf('browser') >= 0; }).map(function (i) { return i.inputName; });
+      return Promise.all(nombres.map(function (n) {
+        return pedir('GetInputSettings', { inputName: n }).then(function (x) { direcciones[n] = direccionDe(x.inputSettings || {}); }, function () { direcciones[n] = ''; });
+      })).then(function () { return nombres; });
+    }).then(function (nombres) {
+      var placas = nombres.filter(function (n) { return esGC(direcciones[n]) && !esMosca(direcciones[n]); });
+      var moscas = nombres.filter(function (n) { return esMosca(direcciones[n]); });
+      llenar($('ws-fuente'), placas, conf.fuente, false); llenar($('ws-mosca'), moscas, conf.mosca, true);
+      conf.fuente = $('ws-fuente').value; conf.mosca = $('ws-mosca').value; grabar(CLAVE_WS, conf);
+      // fuentes ajenas que quedaron con parámetros del GC (por una versión anterior de este panel)
+      var danadas = nombres.filter(function (n) { return !esGC(direcciones[n]) && /[?&]placa=(nombre|tema|cita|redes)\b/.test(direcciones[n]) && /[?&]n=\d+/.test(direcciones[n]); });
+      var caja = $('ws-reparar'); caja.textContent = '';
+      danadas.forEach(function (n) {
+        var limpia = direcciones[n].split('?')[0];
+        var d = document.createElement('div'); d.className = 'aviso';
+        d.textContent = 'La fuente «' + n + '» quedó con datos de la placa pegados a su dirección. ';
+        var bt = document.createElement('button'); bt.className = 'btn chico'; bt.textContent = 'Dejarla como ' + limpia;
+        bt.onclick = function () { pedir('SetInputSettings', { inputName: n, inputSettings: { url: limpia }, overlay: true }).then(function () { d.textContent = 'Listo: «' + n + '» volvió a ' + limpia; }, fallo); };
+        d.appendChild(bt); caja.appendChild(d);
+      });
+      if (!placas.length) estadoWs('ok', 'Conectado', 'No encontré ninguna fuente de navegador que apunte a gc-furia.html. Agrégala en OBS (Archivo local → gc-furia.html) y vuelve a pulsar Conectar.');
+      else estadoWs('ok', 'Conectado', '');
+      leerMosca();
+    }).catch(function () { estadoWs('ok', 'Conectado', 'No se pudo leer la lista de fuentes.'); });
+  }
+  function llenar(sel, nombres, actual, conVacio) {
+    sel.textContent = '';
+    (conVacio ? [''] : []).concat(nombres).forEach(function (n) { var o = document.createElement('option'); o.value = n; o.textContent = n || '— ninguna —'; sel.appendChild(o); });
+    sel.value = nombres.indexOf(actual) >= 0 ? actual : (conVacio && nombres.length !== 1 ? '' : (nombres[0] || ''));   // si hay una sola, se elige sola
+  }
+  $('ws-fuente').onchange = function () { conf.fuente = this.value; grabar(CLAVE_WS, conf); };
+  $('ws-mosca').onchange = function () { conf.mosca = this.value; grabar(CLAVE_WS, conf); leerMosca(); };
+  $('b-conectar').onclick = conectar;
+
+  // La dirección del archivo que ya tiene configurada la fuente (archivo local o URL), sin parámetros.
+  function urlBase(fuente) {
+    return pedir('GetInputSettings', { inputName: fuente }).then(function (r) {
+      var s = r.inputSettings || {}, dir = direccionDe(s);
+      if (!esGC(dir)) throw new Error('la fuente «' + fuente + '» no apunta a gc-furia.html');       // nunca se toca una fuente ajena
+      // encodeURI: la ruta del archivo puede tener espacios y tildes
+      var archivo = function (ruta) { return 'file:///' + encodeURI(String(ruta).replace(/\\/g, '/').replace(/^\/+/, '')); };
+      if (s.local_file && s.is_local_file !== false) return archivo(s.local_file);
+      if (s.url) return String(s.url).split('?')[0].split('#')[0];
+      return archivo(s.local_file);
+    });
+  }
+  /* La fuente puede estar en varias escenas, y con el Modo Estudio la escena que se edita no es la
+     que está al aire: se busca en todas y se prende o apaga en todas las que la tengan. */
+  function itemsDeEscena(fuente) {
+    return pedir('GetSceneList', {}).then(function (r) {
+      var escenas = (r.scenes || []).map(function (e) { return e.sceneName; });
+      return Promise.all(escenas.map(function (e) {
+        return pedir('GetSceneItemId', { sceneName: e, sourceName: fuente }).then(function (it) { return { sceneName: e, sceneItemId: it.sceneItemId }; }, function () { return null; });
+      }));
+    }).then(function (items) {
+      items = items.filter(Boolean);
+      if (!items.length) throw new Error('la fuente «' + fuente + '» no está en ninguna escena');
+      return items;
+    });
+  }
+  function encender(fuente, si) {
+    return itemsDeEscena(fuente).then(function (items) {
+      return Promise.all(items.map(function (it) { return pedir('SetSceneItemEnabled', { sceneName: it.sceneName, sceneItemId: it.sceneItemId, sceneItemEnabled: !!si }); }));
+    });
+  }
+  function ponerUrl(fuente, modo) {
+    return urlBase(fuente).then(function (base) {
+      return pedir('SetInputSettings', { inputName: fuente, inputSettings: { is_local_file: false, url: base + '?' + parametros(modo) }, overlay: true });
+    });
+  }
+  function fallo(e) { estadoWs(wsOk ? 'ok' : '', wsOk ? 'Conectado' : 'Sin conectar', 'No se pudo actualizar OBS: ' + e.message + '.'); }
+  function obsMostrar(modo) {
+    if (!wsOk) return;
+    if (!conf.fuente) return estadoWs('ok', 'Conectado', 'Elige la fuente de la placa (una fuente de navegador con gc-furia.html).');
+    ponerUrl(conf.fuente, modo).then(function () { return encender(conf.fuente, true); }).then(function () { $('ws-msg').textContent = ''; }, fallo);
+  }
+  var apagar = 0;
+  function obsOcultar() {
+    if (!wsOk || !conf.fuente) return;
+    clearTimeout(apagar);
+    ponerUrl(conf.fuente, 'sale').then(function () {
+      apagar = setTimeout(function () { if (!alAire) encender(conf.fuente, false).catch(function () {}); }, 1100);   // deja terminar la salida y apaga la fuente
+    }, fallo);
+  }
+  // mosca: es otra fuente de navegador (gc-furia.html?modo=mosca); aquí solo se prende y se apaga
+  function leerMosca() {
+    var b = $('b-mosca');
+    if (!wsOk || !conf.mosca) { moscaOn = null; b.disabled = true; b.textContent = 'Mosca: —'; return; }
+    itemsDeEscena(conf.mosca).then(function (items) { return pedir('GetSceneItemEnabled', items[0]); }).then(function (r) {
+      moscaOn = !!r.sceneItemEnabled; b.disabled = false; b.textContent = moscaOn ? 'Mosca: al aire' : 'Mosca: oculta';
+    }).catch(function () { moscaOn = null; b.disabled = true; b.textContent = 'Mosca: no está en ninguna escena'; });
+  }
+  $('b-mosca').onclick = function () { if (moscaOn === null) return; encender(conf.mosca, !moscaOn).then(leerMosca, fallo); };
+
+  pintar(); verPrevia('quieto');
+  if (conf.clave || conf.fuente) conectar();     // si ya se conectó antes, reintenta sola
+  window.__gc = { S: S, parametros: parametros, mostrar: mostrar, ocultar: ocultar };
+})();
+</script>
+</body>
+</html>
+

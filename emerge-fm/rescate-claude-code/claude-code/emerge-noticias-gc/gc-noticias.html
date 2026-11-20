@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>GC · Emerge Noticias</title>
+<!--
+  GC de «Emerge Noticias», estilo canal de noticias 24 horas: barra a todo lo ancho con el bloque
+  verde del logo, titular grande sobre blanco, pestañas de ÚLTIMA HORA y lugar, cintillo con reloj y
+  edición, y la mosca EN VIVO · 105.5.
+
+  Va en OBS como Fuente de navegador de 1920x1080 con fondo transparente. Todo llega por la URL.
+
+  Dos fuentes en OBS:
+    gc-noticias.html               la placa (la prende y apaga el panel)
+    gc-noticias.html?modo=base     el cintillo de abajo y la mosca de arriba (quedan fijos al aire)
+
+  Parámetros de la placa
+    placa      titular | ultima | persona
+    lugar      pestaña de lugar (RANCAGUA)          vivo=0  sin el punto rojo de EN VIVO en la pestaña
+    titular, bajada                                  (placas titular y última hora)
+    nombre, cargo                                    (placa persona: entrevistado)
+    cintillo=0 la placa baja al borde (cuando el cintillo no está al aire)
+    anim=0     aparece sin animación · salir=1 sale animada · visible=0 no muestra nada
+    duracion   segundos de la entrada (0.4 a 2)
+
+  Parámetros de modo=base
+    cintillo=0/1   mosca=0/1   items=uno|dos|tres   edicion=auto|primera|mediodia|central|finde|texto
+    vel        velocidad del cintillo en px por segundo (40 a 300)
+    vivoTxt    texto de la mosca junto a EN VIVO (105.5)
+    entra=cintillo|mosca|todo|nada   qué elementos entran animados (por defecto todo)
+    salir=cintillo|mosca|todo        qué elemento sale animado
+
+  modo=todo (vista previa del panel): placa + cintillo + mosca juntos.
+  fondo=foto|cuadros|negro          solo para probar fuera de OBS.
+-->
+<style>
+  @font-face { font-family: 'Unbounded'; src: url('fuentes/Unbounded-Black.ttf') format('truetype'); font-weight: 900; font-display: block; }
+  @font-face { font-family: 'Unbounded'; src: url('fuentes/Unbounded-ExtraBold.ttf') format('truetype'); font-weight: 800; font-display: block; }
+  @font-face { font-family: 'Unbounded'; src: url('fuentes/Unbounded-Bold.ttf') format('truetype'); font-weight: 700; font-display: block; }
+  @font-face { font-family: 'Space Grotesk'; src: url('fuentes/SpaceGrotesk-Medium.ttf') format('truetype'); font-weight: 500; font-display: block; }
+  @font-face { font-family: 'Space Grotesk'; src: url('fuentes/SpaceGrotesk-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: block; }
+  @font-face { font-family: 'Space Grotesk'; src: url('fuentes/SpaceGrotesk-Bold.ttf') format('truetype'); font-weight: 700; font-display: block; }
+
+  :root {
+    /* Manual de marca Emerge FM: Verde Señal, Ámbar (avisos), negro y blanco. Rojo solo para EN VIVO. */
+    --verde: #00e6ab; --verde-a: #00f2b6; --verde-b: #00b386; --ambar: #ffc93c; --rojo: #e0242c;
+    --negro: #0b0b0b; --gris: #1b1b1b; --blanco: #ffffff; --texto2: #333333;
+    --m: 70px;          /* margen lateral del contenido */
+    --logo: 370px;      /* ancho del bloque del logo (y del reloj del cintillo) */
+    --b: 120px;         /* altura de la placa sobre el borde: deja lugar al cintillo */
+    --dur: 0.9s;
+    --k: 1;             /* ajuste automático del titular */
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: transparent !important; overflow: hidden; }
+  #marco { position: absolute; inset: 0; overflow: hidden; }
+  #escena { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; transform: scale(var(--s, 1)); font-family: 'Space Grotesk', system-ui, sans-serif; color: var(--blanco); }
+  body.f-foto #escena { background: #222 url(img/previa.jpg) center / cover no-repeat; }
+  body.f-cuadros #escena { background: repeating-conic-gradient(#2b2b2b 0 25%, #1b1b1b 0 50%) 0 0 / 96px 96px; }
+  body.f-negro #escena { background: #0a0a0a; }
+  body:not(.listo) #escena { visibility: hidden; }
+  body.sin-cintillo { --b: 50px; }
+
+  /* ================= placa ================= */
+  #placa { position: absolute; left: 0; right: 0; bottom: var(--b); display: none; }
+  #placa.on { display: block; }
+
+  .pestanas { display: flex; height: 58px; }
+  .pestanas > span { display: flex; align-items: center; gap: 12px; height: 100%; white-space: nowrap; }
+  .p-ultima { display: none !important; padding: 0 30px 0 var(--m); background: var(--ambar); color: var(--negro); font-family: 'Unbounded', sans-serif; font-weight: 900; font-size: 26px; letter-spacing: 0.06em; }
+  #placa.pl-ultima .p-ultima { display: flex !important; }
+  .p-lugar { padding: 0 26px; background: var(--negro); font-weight: 700; font-size: 24px; letter-spacing: 0.14em; text-transform: uppercase; }
+  #placa:not(.pl-ultima) .p-lugar { padding-left: var(--m); }
+  .p-lugar.vacia { display: none !important; }
+  .p-lugar i { width: 12px; height: 12px; border-radius: 50%; background: var(--rojo); box-shadow: 0 0 0 4px rgba(224, 36, 44, 0.3); }
+  body.sin-vivo .p-lugar i { display: none; }
+
+  .barra { position: relative; display: flex; height: 170px; }
+  .logo { position: relative; width: var(--logo); flex: none; display: flex; align-items: center; gap: 18px; padding-left: var(--m); background: linear-gradient(180deg, var(--verde-a), var(--verde-b)); color: var(--negro); overflow: hidden; }
+  /* el isotipo va en su color, sobre un círculo negro: el manual pide no recolorearlo */
+  .iso { width: 66px; height: 66px; flex: none; border-radius: 50%; background: var(--negro); display: grid; place-items: center; }
+  .iso img { width: 48px; height: 48px; display: block; }
+  .logo .n { font-family: 'Unbounded', sans-serif; font-weight: 900; font-size: 29px; line-height: 1.04; letter-spacing: 0.01em; }
+
+  .panel { position: relative; flex: 1; min-width: 0; background: linear-gradient(180deg, #ffffff, #e9e9e9); color: var(--negro); overflow: hidden; }
+  #placa.pl-ultima .panel { box-shadow: inset 12px 0 0 var(--ambar); }
+  .textos { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: calc(6px * var(--k)); padding: 10px var(--m) 14px 40px; }
+  #placa.pl-ultima .textos { padding-left: 52px; }
+  .tit { font-family: 'Unbounded', sans-serif; font-weight: 900; font-size: calc(54px * var(--k)); line-height: 1.02; letter-spacing: -0.01em; text-transform: uppercase; }
+  #placa.pl-persona .tit { text-transform: none; font-size: calc(58px * var(--k)); }
+  .baj { font-weight: 600; font-size: calc(28px * var(--k)); line-height: 1.2; color: var(--texto2); }
+  .baj.vacia { display: none; }
+  /* línea verde al pie del panel, con un destello que la recorre */
+  .linea { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--verde-b); overflow: hidden; }
+  .linea::after { content: ''; position: absolute; top: 0; bottom: 0; width: 22%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent); transform: translateX(-120%); }
+  .brillo { position: absolute; top: -20%; bottom: -20%; width: 18%; left: 0; opacity: 0; pointer-events: none; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent); }
+  .ambar { position: absolute; inset: 0; background: var(--ambar); transform: scaleX(0); transform-origin: 0 50%; pointer-events: none; }
+
+  /* ---- entrada ---- */
+  @keyframes eLogo { from { transform: translateX(-100%); } to { transform: none; } }
+  @keyframes ePanel { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes eTexto { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+  @keyframes ePest { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes eAmbar { 0% { transform: scaleX(0); transform-origin: 0 50%; } 50% { transform: scaleX(1); transform-origin: 0 50%; } 50.1% { transform: scaleX(1); transform-origin: 100% 50%; } 100% { transform: scaleX(0); transform-origin: 100% 50%; } }
+  .entra .logo { animation: eLogo calc(var(--dur) * 0.42) cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .entra .panel { animation: ePanel calc(var(--dur) * 0.5) cubic-bezier(0.65, 0, 0.25, 1) calc(var(--dur) * 0.18) both; }
+  .entra .tit { animation: eTexto calc(var(--dur) * 0.4) cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--dur) * 0.45) both; }
+  .entra .baj { animation: eTexto calc(var(--dur) * 0.4) cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--dur) * 0.56) both; }
+  .entra .pestanas > span { animation: ePest calc(var(--dur) * 0.3) cubic-bezier(0.65, 0, 0.25, 1) calc(var(--dur) * 0.6) both; }
+  .entra .pestanas > .p-lugar { animation-delay: calc(var(--dur) * 0.7); }
+  .entra.pl-ultima .ambar { animation: eAmbar calc(var(--dur) * 0.62) cubic-bezier(0.65, 0, 0.35, 1) calc(var(--dur) * 0.14) both; }
+
+  /* ---- salida ---- */
+  @keyframes sFuera { to { opacity: 0; } }
+  @keyframes sPanel { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 100% 0 0); } }
+  @keyframes sLogo { to { transform: translateX(-100%); } }
+  .sale .textos, .sale .pestanas { animation: sFuera 0.18s ease-in both; }
+  .sale .panel { animation: sPanel 0.38s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both; }
+  .sale .logo { animation: sLogo 0.3s cubic-bezier(0.55, 0, 0.8, 0.2) 0.36s both; }
+
+  /* ---- en espera: la placa sigue viva mientras está al aire ---- */
+  @keyframes vLinea { 0% { transform: translateX(-120%); } 45%, 100% { transform: translateX(560%); } }
+  @keyframes vBrillo { 0% { opacity: 1; transform: translateX(-120%); } 18% { opacity: 1; transform: translateX(620%); } 19%, 100% { opacity: 0; transform: translateX(620%); } }
+  @keyframes vUltima { 0%, 100% { background: var(--ambar); } 50% { background: #ffe08a; } }
+  @keyframes vPunto { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+  #placa.on .linea::after { animation: vLinea 4.2s cubic-bezier(0.45, 0, 0.35, 1) calc(var(--dur) + 0.3s) infinite; }
+  #placa.on .logo .brillo { animation: vBrillo 7s cubic-bezier(0.45, 0, 0.3, 1) calc(var(--dur) + 1.2s) infinite; }
+  #placa.on.pl-ultima .p-ultima { animation: ePest calc(var(--dur) * 0.3) cubic-bezier(0.65, 0, 0.25, 1) calc(var(--dur) * 0.6) both, vUltima 1.1s ease-in-out var(--dur) infinite; }
+  #placa.on:not(.entra).pl-ultima .p-ultima { animation: vUltima 1.1s ease-in-out infinite; }
+  #placa.on .p-lugar i { animation: vPunto 1.2s ease-in-out infinite; }
+
+  /* ================= cintillo ================= */
+  #cintillo { position: absolute; left: 0; right: 0; bottom: 50px; height: 70px; display: none; background: var(--negro); }
+  body.ver-cintillo #cintillo { display: flex; }
+  .c-reloj { width: var(--logo); flex: none; display: flex; align-items: center; gap: 16px; padding-left: var(--m); background: var(--gris); position: relative; z-index: 1; }
+  .c-hora { font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: 31px; font-variant-numeric: tabular-nums; }
+  .c-ed { font-weight: 700; font-size: 15px; letter-spacing: 0.14em; line-height: 1.15; color: var(--verde); text-transform: uppercase; }
+  .c-pista { position: relative; flex: 1; min-width: 0; overflow: hidden; display: flex; align-items: center;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 36px, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(90deg, transparent 0, #000 36px, #000 calc(100% - 36px), transparent); }
+  .c-cinta { display: inline-flex; align-items: center; white-space: nowrap; padding-left: 30px; will-change: transform; animation: corre var(--t-cinta, 40s) linear infinite; }
+  .c-cinta span { font-weight: 700; font-size: 27px; letter-spacing: 0.02em; text-transform: uppercase; }
+  .c-cinta i { display: inline-block; width: 12px; height: 12px; background: var(--verde); margin: 0 26px 3px; }
+  @keyframes corre { from { transform: translateX(0); } to { transform: translateX(var(--d-cinta, -50%)); } }
+  @keyframes cEntra { from { transform: translateY(130%); } to { transform: none; } }
+  @keyframes cSale { to { transform: translateY(130%); } }
+  #cintillo.entra { animation: cEntra 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  #cintillo.sale { animation: cSale 0.4s cubic-bezier(0.55, 0, 0.8, 0.2) both; }
+
+  /* ================= mosca ================= */
+  #mosca { position: absolute; right: var(--m); top: 56px; display: none; align-items: stretch; font-family: 'Unbounded', sans-serif; font-weight: 900; font-size: 24px; }
+  body.ver-mosca #mosca { display: flex; }
+  #mosca .a { display: flex; align-items: center; gap: 10px; background: var(--rojo); padding: 10px 18px; }
+  #mosca .a i { width: 11px; height: 11px; border-radius: 50%; background: var(--blanco); animation: vPunto 1.2s ease-in-out infinite; }
+  #mosca .b { background: var(--negro); padding: 10px 18px; color: var(--verde); }
+  #mosca .b:empty { display: none; }
+  @keyframes mEntra { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
+  #mosca.entra { animation: mEntra 0.5s cubic-bezier(0.65, 0, 0.25, 1) both; }
+  #mosca.sale { animation: sFuera 0.35s ease-in both; }
+</style>
+</head>
+<body>
+<div id="marco">
+  <div id="escena">
+    <div id="mosca"><span class="a"><i></i>EN VIVO</span><span class="b" id="m-txt">105.5</span></div>
+
+    <div id="placa">
+      <div class="pestanas"><span class="p-ultima">ÚLTIMA HORA</span><span class="p-lugar" id="p-lugar"><i></i><span id="t-lugar"></span></span></div>
+      <div class="barra">
+        <div class="logo"><div class="brillo"></div><span class="iso"><img src="img/isotipo.png" alt=""></span><div class="n">EMERGE<br>NOTICIAS</div></div>
+        <div class="panel">
+          <div class="ambar"></div>
+          <div class="textos"><div class="tit" id="t-tit"></div><div class="baj" id="t-baj"></div></div>
+          <div class="linea"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="cintillo">
+      <div class="c-reloj"><span class="c-hora" id="c-hora">00:00</span><span class="c-ed" id="c-ed"></span></div>
+      <div class="c-pista"><div class="c-cinta" id="c-cinta"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var q; try { q = new URLSearchParams(location.search); } catch (e) { q = new URLSearchParams(''); }
+  var P = function (k, def) { var v = q.get(k); return v === null || v === '' ? def : v; };
+  var num = function (k, def, min, max) { var v = Number(P(k, def)); return isNaN(v) ? def : Math.max(min, Math.min(max, v)); };
+  var $ = function (id) { return document.getElementById(id); };
+  var raiz = document.documentElement, body = document.body, placa = $('placa');
+
+  var modo = String(P('modo', 'placa')).toLowerCase();          // placa | base | todo
+  var verPlaca = modo === 'placa' || modo === 'todo';
+  var verBase = modo === 'base' || modo === 'todo';
+
+  raiz.style.setProperty('--dur', num('duracion', 0.9, 0.4, 2) + 's');
+  var fondo = String(P('fondo', '')).toLowerCase();
+  if (fondo.indexOf('cuadro') >= 0) body.classList.add('f-cuadros'); else if (fondo === 'negro') body.classList.add('f-negro'); else if (fondo === 'foto') body.classList.add('f-foto');
+  var conCintillo = P('cintillo', '1') !== '0';
+  if (!conCintillo) body.classList.add('sin-cintillo');
+  if (P('vivo', '1') === '0') body.classList.add('sin-vivo');
+
+  function encajar() { var m = $('marco'); if (m.clientWidth) raiz.style.setProperty('--s', Math.min(m.clientWidth / 1920, m.clientHeight / 1080)); }
+  window.addEventListener('resize', encajar); encajar();
+
+  // ---------- textos de la placa ----------
+  var tipo = String(P('placa', 'titular')).toLowerCase();
+  if (['titular', 'ultima', 'persona'].indexOf(tipo) < 0) tipo = 'titular';
+  placa.classList.add('pl-' + tipo);
+  var lugar = P('lugar', '');
+  $('t-lugar').textContent = lugar; $('p-lugar').classList.toggle('vacia', !lugar);
+  var tit = tipo === 'persona' ? P('nombre', 'Nombre Apellido') : P('titular', 'Titular de la noticia');
+  var baj = tipo === 'persona' ? P('cargo', '') : P('bajada', '');
+  $('t-tit').textContent = tit; $('t-baj').textContent = baj; $('t-baj').classList.toggle('vacia', !baj);
+
+  // si el titular no cabe en dos líneas (o con la bajada se pasa del alto), se achica
+  function ajustar() {
+    var t = $('t-tit'), caja = placa.querySelector('.textos'), k = 1;
+    for (var i = 0; i < 12; i++) {
+      var lineas = Math.round(t.offsetHeight / parseFloat(getComputedStyle(t).lineHeight));
+      var sobra = caja.scrollHeight > caja.clientHeight + 1;
+      if ((lineas <= 2 && !sobra) || k <= 0.55) break;
+      k = Math.max(0.55, k - 0.05); raiz.style.setProperty('--k', k.toFixed(2));
+    }
+  }
+
+  // ---------- cintillo y mosca ----------
+  var EDICIONES = { primera: 'Primera<br>Edición', mediodia: 'Edición<br>Mediodía', central: 'Edición<br>Central', finde: 'Fin de<br>Semana' };
+  function edicionAuto(d) {
+    var dia = d.getDay(), h = d.getHours();
+    if (dia === 0 || dia === 6) return 'finde';
+    return h < 11 ? 'primera' : h < 17 ? 'mediodia' : 'central';
+  }
+  var edicion = String(P('edicion', 'auto'));
+  function pintarEdicion(d) {
+    var e = edicion.toLowerCase();
+    if (e === 'auto') e = edicionAuto(d);
+    if (EDICIONES[e]) $('c-ed').innerHTML = EDICIONES[e];
+    else $('c-ed').textContent = edicion;           // texto libre
+  }
+  function tic() {
+    var d = new Date();
+    $('c-hora').textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    pintarEdicion(d);
+  }
+  var items = String(P('items', '')).split('|').map(function (s) { return s.trim(); }).filter(Boolean);
+  function armarCinta() {
+    var cinta = $('c-cinta'); cinta.textContent = '';
+    if (!items.length) return;
+    // se repite la lista hasta llenar de sobra el ancho y se duplica: así el loop no tiene salto
+    var vuelta = document.createElement('span'); vuelta.style.display = 'inline-flex'; vuelta.style.alignItems = 'center';
+    items.forEach(function (t) { var s = document.createElement('span'); s.textContent = t; vuelta.appendChild(s); vuelta.appendChild(document.createElement('i')); });
+    cinta.appendChild(vuelta);
+    var ancho = vuelta.offsetWidth || 1, pista = cinta.parentNode.clientWidth || 1550, copias = Math.max(1, Math.ceil(pista / ancho));
+    for (var c = 1; c < copias * 2; c++) cinta.appendChild(vuelta.cloneNode(true));
+    var dist = ancho * copias, vel = num('vel', 110, 40, 300);
+    cinta.style.setProperty('--d-cinta', (-dist) + 'px');
+    cinta.style.setProperty('--t-cinta', (dist / vel).toFixed(2) + 's');
+  }
+  var verCintillo = verBase && P('cintillo', '1') !== '0' && (modo === 'base' || modo === 'todo');
+  var verMosca = verBase && P('mosca', '1') !== '0';
+  if (modo === 'todo' && !conCintillo) verCintillo = false;
+  $('m-txt').textContent = q.has('vivoTxt') ? q.get('vivoTxt') : '105.5';
+
+  // ---------- arranque ----------
+  var visible = verPlaca && P('visible', '1') !== '0';
+  var quieto = P('anim', '1') === '0';
+  var salir = P('salir', '');
+  function entrar() { placa.classList.remove('entra', 'sale'); void placa.offsetWidth; placa.classList.add('entra'); }
+  function animar(el, clase) { el.classList.remove('entra', 'sale'); void el.offsetWidth; el.classList.add(clase); }
+  function arrancar() {
+    body.classList.add('listo');
+    if (visible) {
+      placa.classList.add('on'); ajustar();
+      if (modo === 'placa' && salir === '1') requestAnimationFrame(function () { requestAnimationFrame(function () { placa.classList.add('sale'); }); });
+      else if (!quieto) entrar();
+    }
+    if (verCintillo || verMosca) {
+      var entra = String(P('entra', modo === 'todo' ? 'nada' : 'todo')).toLowerCase();
+      if (quieto) entra = 'nada';
+      if (verCintillo) {
+        body.classList.add('ver-cintillo'); tic(); setInterval(tic, 1000); armarCinta();
+        if (salir === 'cintillo' || salir === 'todo') animar($('cintillo'), 'sale');
+        else if (entra === 'cintillo' || entra === 'todo') animar($('cintillo'), 'entra');
+      }
+      if (verMosca) {
+        body.classList.add('ver-mosca');
+        if (salir === 'mosca' || salir === 'todo') animar($('mosca'), 'sale');
+        else if (entra === 'mosca' || entra === 'todo') animar($('mosca'), 'entra');
+      }
+    }
+  }
+  var imagenes = Array.prototype.map.call(document.images, function (im) { return im.complete ? Promise.resolve() : new Promise(function (r) { im.onload = im.onerror = r; }); });
+  var fuentes = document.fonts && document.fonts.load ? Promise.all([document.fonts.load('900 54px Unbounded', 'ÁÑ'), document.fonts.load('800 30px Unbounded', '0'), document.fonts.load('700 27px "Space Grotesk"', 'Ñ'), document.fonts.load('600 27px "Space Grotesk"', 'Ñ')]) : Promise.resolve();
+  Promise.race([Promise.all([fuentes].concat(imagenes)), new Promise(function (r) { setTimeout(r, 2500); })]).then(arrancar, arrancar);
+
+  // un clic repite la entrada (para probar en el navegador)
+  $('marco').addEventListener('click', function () { if (visible) entrar(); });
+})();
+</script>
+</body>
+</html>

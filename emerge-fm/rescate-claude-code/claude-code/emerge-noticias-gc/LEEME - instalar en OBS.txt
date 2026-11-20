@@ -1,0 +1,77 @@
+GC «EMERGE NOTICIAS» PARA OBS  ·  estilo canal 24 horas
+=======================================================
+
+Funciona sin internet. Mantén todo junto: gc-noticias.html, panel-noticias.html y las carpetas «img» y
+«fuentes». Si falta «img», no se ve el logo; si falta «fuentes», cambia la letra.
+
+Qué trae
+  - Placas (las prende y apaga el panel):
+      Titular        titular grande + bajada, con la pestaña de lugar
+      Última hora    igual, con la pestaña ámbar ÚLTIMA HORA que late y una entrada más fuerte
+      Entrevistado   nombre + cargo
+  - Cintillo de abajo: reloj, edición (Primera, Mediodía, Central, Fin de Semana; o automática según la
+    hora) y noticias que corren.
+  - Mosca arriba a la derecha: EN VIVO · 105.5.
+  El cintillo y la mosca van en una fuente aparte y quedan fijos al aire mientras entran y salen las placas.
+
+
+1. DÓNDE DEJAR LA CARPETA
+-------------------------
+Deja la carpeta así:   C:\GC-Noticias\
+(dentro deben quedar gc-noticias.html, panel-noticias.html, img y fuentes).
+Con esa ruta, las direcciones de abajo sirven tal cual. Si la dejas en otro lugar, cambia
+«C:/GC-Noticias» por tu ruta y escribe los espacios como %20.
+
+
+2. LA PLACA
+-----------
+En la escena del noticiero: Fuentes → + → Navegador → nombre «GC NOTICIAS».
+  - Marca «Archivo local» → Examinar → C:\GC-Noticias\gc-noticias.html
+  - Ancho 1920, Alto 1080
+  - Desmarca «Apagar la fuente cuando no sea visible»
+  - Desmarca «Actualizar navegador cuando la escena se active»
+Déjala arriba de la cámara en la lista de fuentes.
+
+
+3. EL CINTILLO Y LA MOSCA
+-------------------------
+Otra fuente de navegador, nombre «BASE NOTICIAS».
+  - «Archivo local» DESMARCADO
+  - URL:  file:///C:/GC-Noticias/gc-noticias.html?modo=base
+  - Ancho 1920, Alto 1080, y desmarca las mismas dos casillas.
+Ponla debajo de «GC NOTICIAS» en la lista.
+
+
+4. SERVIDOR WEBSOCKET
+---------------------
+Herramientas → Configuración del servidor WebSocket → marca «Habilitar servidor WebSocket».
+Puerto 4455. Pulsa «Mostrar información de conexión» y copia la contraseña.
+
+
+5. EL PANEL DE CONTROL
+----------------------
+Menú Acoplables → Acoplables de navegador personalizados:
+  - Nombre: Control GC Noticias
+  - URL:    file:///C:/GC-Noticias/panel-noticias.html
+  - Aplicar
+En «Conexión con OBS», pega la contraseña y pulsa «Conectar». Deben aparecer «GC NOTICIAS» como fuente
+de la placa y «BASE NOTICIAS» como fuente base.
+
+
+USO
+---
+  - Elige Titular, Última hora o Entrevistado y escribe. El lugar va en la pestaña (vacío = sin pestaña).
+  - «Mostrar al aire» la hace entrar; «Ocultar» la saca.
+  - «Actualizar texto» corrige una placa que ya está al aire sin repetir la entrada.
+  - Cintillo: escribe una noticia por línea y pulsa «Actualizar cintillo».
+    «Cintillo: al aire / oculto» y «Mosca: al aire / oculta» los prenden y apagan.
+    Si ocultas el cintillo, la placa baja sola al borde de la pantalla.
+  - «Guardados»: placas listas; un clic las carga.
+
+
+SI ALGO NO SE VE
+----------------
+  - Logo no aparece: falta la carpeta «img» junto a gc-noticias.html.
+  - Cambiaste archivos: en las propiedades de la fuente pulsa «Actualizar caché de la página actual»;
+    en el panel, clic derecho → Actualizar.
+  - El panel no encuentra la fuente base: su URL debe terminar en gc-noticias.html?modo=base (paso 3).

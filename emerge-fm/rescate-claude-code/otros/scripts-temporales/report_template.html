@@ -1,0 +1,640 @@
+<title>Prospección Emerge 105.5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+  :root{
+    --ground:#F2F0EC;
+    --surface:#FFFFFF;
+    --surface-2:#E9E5DE;
+    --ink:#1C2126;
+    --ink-2:#5A6068;
+    --ink-3:#8A9098;
+    --line:#D6D1C8;
+    --copper:#A9481C;
+    --copper-soft:#EBD9CE;
+    --amber:#C67A12;
+    --slate:#3E5563;
+    --ok:#2F6B4F;
+    --shadow:0 1px 2px rgba(28,33,38,.06), 0 8px 24px -16px rgba(28,33,38,.28);
+    --display:'Archivo', 'Segoe UI', system-ui, sans-serif;
+    --body:'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --mono:'IBM Plex Mono', 'Consolas', ui-monospace, monospace;
+    --maxw:74rem;
+    --readw:64ch;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#14181C;
+      --surface:#1B2126;
+      --surface-2:#232A31;
+      --ink:#E9E6E1;
+      --ink-2:#A7AEB5;
+      --ink-3:#767E86;
+      --line:#31383F;
+      --copper:#E07B45;
+      --copper-soft:#3A2519;
+      --amber:#E0A030;
+      --slate:#8FB0C4;
+      --ok:#6FBF95;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#14181C;
+    --surface:#1B2126;
+    --surface-2:#232A31;
+    --ink:#E9E6E1;
+    --ink-2:#A7AEB5;
+    --ink-3:#767E86;
+    --line:#31383F;
+    --copper:#E07B45;
+    --copper-soft:#3A2519;
+    --amber:#E0A030;
+    --slate:#8FB0C4;
+    --ok:#6FBF95;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+  .read{max-width:var(--readw)}
+  h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+  p{margin:0}
+  a{color:var(--copper)}
+  :focus-visible{outline:2px solid var(--copper);outline-offset:3px;border-radius:2px}
+
+  /* ---------- masthead ---------- */
+  .masthead{border-bottom:1px solid var(--line);background:var(--surface)}
+  .masthead .wrap{display:flex;flex-direction:column;gap:28px;padding-top:34px;padding-bottom:30px}
+  .brandline{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .brandline .station{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.16em;text-transform:uppercase}
+  .brandline .meta{font-family:var(--mono);font-size:12px;color:var(--ink-3);letter-spacing:.06em}
+  .onair{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+         text-transform:uppercase;color:var(--copper);border:1px solid var(--copper);border-radius:999px;padding:3px 10px}
+  .onair i{width:6px;height:6px;border-radius:50%;background:var(--copper);display:block}
+  h1{font-size:clamp(2.1rem,5.4vw,3.5rem);font-weight:800;letter-spacing:-.025em;max-width:20ch}
+  .standfirst{font-size:clamp(1.05rem,2vw,1.2rem);color:var(--ink-2);max-width:58ch}
+
+  /* dial */
+  .dial{display:flex;align-items:flex-end;gap:0;height:44px;border-bottom:1px solid var(--line);position:relative}
+  .dial .tick{flex:1;border-left:1px solid var(--line);height:9px}
+  .dial .tick.major{height:20px;border-left-color:var(--ink-3)}
+  .dial .needle{position:absolute;left:55%;bottom:0;width:2px;height:40px;background:var(--copper)}
+  .dial .needle::after{content:"105.5 FM";position:absolute;bottom:22px;left:6px;font-family:var(--mono);
+      font-size:11px;letter-spacing:.08em;color:var(--copper);white-space:nowrap}
+
+  /* ---------- sections ---------- */
+  section{padding:clamp(40px,6vw,64px) 0;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
+  h2{font-size:clamp(1.45rem,3vw,2rem);font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+  h3{font-size:1.12rem;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
+  .lead{color:var(--ink-2);margin-bottom:28px}
+  .stack{display:flex;flex-direction:column;gap:18px}
+  .stack-lg{display:flex;flex-direction:column;gap:34px}
+
+  /* stat row */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);
+         border:1px solid var(--line);border-radius:3px;overflow:hidden}
+  .stat{background:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:4px}
+  .stat .n{font-family:var(--mono);font-size:1.7rem;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .stat .k{font-family:var(--display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+  .stat .d{font-size:.86rem;color:var(--ink-2);line-height:1.4}
+  .stat.hi .n{color:var(--copper)}
+
+  /* plan ladder */
+  .ladder{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:3px;overflow:hidden;background:var(--surface)}
+  .rung{display:grid;grid-template-columns:minmax(120px,1.1fr) minmax(90px,.7fr) minmax(180px,2fr);gap:16px;
+        padding:14px 18px;border-top:1px solid var(--line);align-items:baseline}
+  .rung:first-child{border-top:0}
+  .rung.new{background:var(--copper-soft)}
+  .rung .name{font-family:var(--display);font-weight:600;font-size:.98rem}
+  .rung .price{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .rung .desc{font-size:.9rem;color:var(--ink-2);line-height:1.45}
+  .rung .tag{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--copper);display:block}
+
+  /* criteria */
+  .criteria{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}
+  .crit{border-top:2px solid var(--copper);padding-top:12px}
+  .crit .w{font-family:var(--mono);font-size:12px;color:var(--copper);font-weight:600}
+  .crit h4{font-family:var(--display);font-size:1rem;font-weight:600;margin:2px 0 5px}
+  .crit p{font-size:.9rem;color:var(--ink-2);line-height:1.5}
+  .crit:nth-child(2){border-color:var(--amber)} .crit:nth-child(2) .w{color:var(--amber)}
+  .crit:nth-child(3){border-color:var(--slate)} .crit:nth-child(3) .w{color:var(--slate)}
+  .crit:nth-child(4){border-color:var(--ok)} .crit:nth-child(4) .w{color:var(--ok)}
+  .crit:nth-child(5){border-color:var(--ink-3)} .crit:nth-child(5) .w{color:var(--ink-3)}
+
+  /* filters + table */
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.02em;padding:6px 12px;border-radius:999px;
+        border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer}
+  .chip[aria-pressed="true"]{background:var(--copper);border-color:var(--copper);color:#fff}
+  select,input[type="search"]{font-family:var(--display);font-size:13px;padding:7px 10px;border:1px solid var(--line);
+        border-radius:3px;background:var(--surface);color:var(--ink)}
+  input[type="search"]{min-width:190px}
+  .count{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-left:auto;font-variant-numeric:tabular-nums}
+
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:3px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;min-width:940px}
+  thead th{font-family:var(--display);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);
+        text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap;position:sticky;top:0}
+  tbody td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;font-size:.92rem}
+  tbody tr:last-child td{border-bottom:0}
+  td.rank{font-family:var(--mono);color:var(--ink-3);font-variant-numeric:tabular-nums;width:44px}
+  td.firm{min-width:250px}
+  .firm .nm{font-family:var(--display);font-weight:600;font-size:.97rem;line-height:1.3;display:block}
+  .firm .ru{font-size:.8rem;color:var(--ink-3);display:block;margin-top:2px}
+  .firm .hook{font-size:.83rem;color:var(--ink-2);line-height:1.45;margin-top:7px;max-width:46ch}
+  td.contact{min-width:200px;font-family:var(--mono);font-size:.78rem;line-height:1.55;color:var(--ink-2);word-break:break-word}
+  td.contact .adr{font-family:var(--body);font-size:.83rem;color:var(--ink-3);display:block;margin-bottom:3px}
+  td.plan{min-width:150px;font-size:.83rem;color:var(--ink-2)}
+  td.score{width:132px}
+  .scorenum{font-family:var(--mono);font-weight:600;font-size:1.05rem;font-variant-numeric:tabular-nums}
+  .bar{display:flex;height:6px;border-radius:2px;overflow:hidden;background:var(--surface-2);margin-top:5px;width:112px}
+  .bar span{display:block;height:100%}
+  .s1{background:var(--copper)} .s2{background:var(--amber)} .s3{background:var(--slate)}
+  .s4{background:var(--ok)} .s5{background:var(--ink-3)}
+  .pri{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:2px;white-space:nowrap;display:inline-block}
+  .pri.A{background:var(--copper);color:#fff}
+  .pri.B{background:transparent;color:var(--amber);border:1px solid var(--amber)}
+  .pri.C{background:transparent;color:var(--ink-3);border:1px solid var(--line)}
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+  .legend b{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:baseline}
+
+  /* first moves */
+  .moves{display:flex;flex-direction:column;gap:0;border-left:2px solid var(--line)}
+  .move{padding:0 0 26px 22px;position:relative}
+  .move:last-child{padding-bottom:0}
+  .move::before{content:"";position:absolute;left:-6px;top:8px;width:10px;height:10px;border-radius:50%;
+       background:var(--copper);border:2px solid var(--ground)}
+  .move .who{font-family:var(--display);font-weight:600;font-size:1.05rem}
+  .move .why{color:var(--ink-2);font-size:.94rem;margin-top:4px;max-width:62ch}
+  .move .ask{font-family:var(--mono);font-size:.78rem;color:var(--copper);margin-top:6px;display:block}
+
+  /* weeks */
+  .weeks{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+  .week{background:var(--surface);padding:16px 18px}
+  .week .wk{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--copper);text-transform:uppercase}
+  .week h4{font-family:var(--display);font-size:.98rem;font-weight:600;margin:4px 0 6px}
+  .week p{font-size:.86rem;color:var(--ink-2);line-height:1.5}
+
+  /* script */
+  .script{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--copper);padding:22px 24px;border-radius:0 3px 3px 0}
+  .script p{margin-bottom:12px}
+  .script p:last-child{margin-bottom:0}
+  .script .who{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);display:block}
+  .gap{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+  .gapitem{background:var(--surface);border:1px solid var(--line);padding:18px 20px;border-radius:3px}
+  .gapitem h4{font-family:var(--display);font-size:.98rem;font-weight:600;margin-bottom:6px}
+  .gapitem p{font-size:.89rem;color:var(--ink-2);line-height:1.5}
+  .gapitem .fix{font-size:.86rem;color:var(--ink);margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+  .gapitem .fix b{font-family:var(--display);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--copper);display:block;margin-bottom:3px}
+
+  ul.list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
+  ul.list li{position:relative;padding-left:20px;font-size:.95rem;color:var(--ink-2)}
+  ul.list li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:1.5px;background:var(--copper)}
+  ul.list li b{color:var(--ink);font-family:var(--display);font-weight:600;font-size:.92rem}
+
+  .note{background:var(--copper-soft);border:1px solid var(--copper);border-radius:3px;padding:18px 20px}
+  .note h3{color:var(--copper);font-size:1rem;margin-bottom:6px}
+  .note p{font-size:.92rem;color:var(--ink);line-height:1.55}
+
+  footer{padding:34px 0 60px;color:var(--ink-3);font-size:.84rem}
+  footer .srcs{font-family:var(--mono);font-size:11px;line-height:1.9;word-break:break-word}
+  @media (prefers-reduced-motion:no-preference){
+    .onair i{animation:pulse 2.4s ease-in-out infinite}
+  }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+  @media (max-width:640px){
+    .rung{grid-template-columns:1fr;gap:4px}
+    body{font-size:16px}
+  }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="brandline">
+      <span class="station">Emerge Comunicaciones SpA</span>
+      <span class="onair"><i></i>Al aire</span>
+      <span class="meta">Región de O'Higgins · Septiembre 2026</span>
+    </div>
+    <div>
+      <h1>Dónde vender los primeros auspicios</h1>
+      <p class="standfirst">Plan de prospección comercial para Radio Emerge FM 105.5 en Rancagua, Machalí y comunas vecinas: 67 empresas identificadas, ordenadas por probabilidad real de cierre.</p>
+    </div>
+    <div class="dial" aria-hidden="true">
+      <span class="tick major"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick major"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick major"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick major"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick major"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="needle"></span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section id="resumen">
+  <div class="wrap stack-lg">
+    <div>
+      <p class="eyebrow">Resumen</p>
+      <h2>Lo que hay sobre la mesa</h2>
+      <p class="lead read">La cotización actual parte en $150.000 mensuales. En Rancagua y Machalí eso deja fuera a la mayoría del comercio, así que este informe trabaja con dos frentes: las empresas que sí pagan ese ticket hoy, y una escalera de entrada que convierte a las pymes chicas en clientes de aquí a tres meses.</p>
+    </div>
+    <div class="stats">
+      <div class="stat hi"><span class="k">Prospectos</span><span class="n">67</span><span class="d">Empresas con datos de contacto públicos en Rancagua, Machalí y alrededores</span></div>
+      <div class="stat hi"><span class="k">Ronda 1</span><span class="n">17</span><span class="d">Prioridad A: donde parte la gestión, semanas 1 a 3</span></div>
+      <div class="stat"><span class="k">Ronda 2</span><span class="n">31</span><span class="d">Prioridad B: semanas 4 a 8, tras los primeros casos de éxito</span></div>
+      <div class="stat"><span class="k">Canje / entrada</span><span class="n">19</span><span class="d">Prioridad C: llenan parrilla y generan contenido, no caja</span></div>
+      <div class="stat"><span class="k">Meta trimestre</span><span class="n">8–10</span><span class="d">Cierres esperados con 20% de conversión sobre las rondas 1 y 2</span></div>
+    </div>
+    <div class="read stack">
+      <h3>La cuenta que hay que hacerse</h3>
+      <p>Con 48 empresas contactables en las rondas 1 y 2 y una conversión de venta fría local del 15% al 25%, salen entre 7 y 12 cierres. A un ticket promedio de $150.000 a $200.000 mensuales, eso es del orden de <b>$1,2 a $2,0 millones mensuales recurrentes</b> hacia fin del trimestre. No es una proyección de la radio: es la aritmética de esta lista, y sirve para saber si el esfuerzo de calle vale la pena antes de empezar.</p>
+    </div>
+  </div>
+</section>
+
+<section id="cotizacion">
+  <div class="wrap stack-lg">
+    <div>
+      <p class="eyebrow">Diagnóstico</p>
+      <h2>Cinco cosas que le faltan a la cotización</h2>
+      <p class="lead read">El documento actual comunica precios con claridad, pero le pide al cliente que decida con la mitad de la información. Estos cinco arreglos no cuestan dinero y suben la tasa de respuesta.</p>
+    </div>
+    <div class="gap">
+      <div class="gapitem">
+        <h4>No tiene cómo contactarte</h4>
+        <p>La cotización cierra con tu nombre y cargo, pero sin teléfono, correo, WhatsApp ni dirección del estudio. Un dueño que quiere decir que sí no tiene dónde escribir.</p>
+        <p class="fix"><b>Arreglo</b>Bloque de contacto al pie: WhatsApp comercial, correo, y el link de escucha en vivo.</p>
+      </div>
+      <div class="gapitem">
+        <h4>No dice a quién llega</h4>
+        <p>El cliente no compra frases, compra oyentes. Falta el perfil: música de los 80 y 90 más noticias, audiencia adulta de 30 a 60 años en la conurbación Rancagua-Machalí.</p>
+        <p class="fix"><b>Arreglo</b>Una línea de audiencia y las cifras de alcance de tus redes y del sitio de noticias.</p>
+      </div>
+      <div class="gapitem">
+        <h4>El salto de precio es muy alto</h4>
+        <p>El escalón más bajo son $150.000. Una ferretería o un minimarket de Machalí no entra ahí, y son justamente los que deciden en el momento.</p>
+        <p class="fix"><b>Arreglo</b>Dos peldaños nuevos de $50.000 y $100.000, abajo en la escalera.</p>
+      </div>
+      <div class="gapitem">
+        <h4>Todo se cobra igual, a cualquier hora</h4>
+        <p>Una frase a las 8 de la mañana no vale lo mismo que una a las 3 de la tarde. Cobrar plano regala tu mejor inventario y no te deja negociar.</p>
+        <p class="fix"><b>Arreglo</b>Definir franja alta (matinal y bloque de noticias) y ofrecerla como argumento, no como descuento.</p>
+      </div>
+      <div class="gapitem">
+        <h4>No hay fecha de cierre ni beneficio de partida</h4>
+        <p>Sin plazo, la cotización queda "para verlo después". Sin gancho de lanzamiento, no hay razón para firmar esta semana en vez del próximo mes.</p>
+        <p class="fix"><b>Arreglo</b>Tarifa de fundador con precio congelado 6 meses para los primeros 10 auspiciadores, con fecha de término.</p>
+      </div>
+      <div class="gapitem">
+        <h4>El precio por frase no premia comprar más</h4>
+        <p>El plan de 100 frases y el de 150 cuestan lo mismo por frase ($2.000). Solo el plan grande baja a $1.600. El escalón del medio no tiene incentivo.</p>
+        <p class="fix"><b>Arreglo</b>Bajar el plan de 150 frases a $1.800 por frase, o sumarle una mención en vivo diaria sin costo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="planes">
+  <div class="wrap stack-lg">
+    <div>
+      <p class="eyebrow">Propuesta comercial</p>
+      <h2>La escalera de planes, con dos peldaños nuevos</h2>
+      <p class="lead read">Los cuatro planes de la cotización se mantienen tal cual. Debajo se agregan dos entradas y una modalidad de canje, para que ninguna conversación termine en "es mucho para mí".</p>
+    </div>
+    <div class="ladder">
+      <div class="rung new">
+        <div class="name">Vitrina<span class="tag">Nuevo</span></div>
+        <div class="price">$50.000</div>
+        <div class="desc">3 frases diarias de lunes a viernes, 60 al mes, más una publicación mensual en las redes de la radio. Para almacenes, barberías, minimarkets y comercio de barrio.</div>
+      </div>
+      <div class="rung new">
+        <div class="name">Barrio<span class="tag">Nuevo</span></div>
+        <div class="price">$100.000</div>
+        <div class="desc">5 frases diarias de lunes a viernes, 100 al mes, más una mención en vivo semanal. El escalón que convierte al comercio local en cliente recurrente.</div>
+      </div>
+      <div class="rung">
+        <div class="name">Programa con menciones</div>
+        <div class="price">$150.000</div>
+        <div class="desc">2 frases más 2 menciones y promociones dentro del programa en vivo de dos horas, lunes a viernes. El plan de mejor margen: se vende el rostro, no el spot.</div>
+      </div>
+      <div class="rung">
+        <div class="name">Plan lunes a viernes</div>
+        <div class="price">$200.000</div>
+        <div class="desc">5 frases diarias, 100 al mes, a $2.000 la frase. Pensado para quien solo necesita presencia en días hábiles.</div>
+      </div>
+      <div class="rung">
+        <div class="name">Plan 150 frases</div>
+        <div class="price">$300.000</div>
+        <div class="desc">5 frases diarias los 30 días, 150 al mes, a $2.000 la frase. Cobertura de fin de semana incluida.</div>
+      </div>
+      <div class="rung">
+        <div class="name">Plan 300 frases</div>
+        <div class="price">$500.000</div>
+        <div class="desc">10 frases diarias los 30 días, 300 al mes, a $1.600 la frase. El plan de saturación, para automotoras, multitiendas y clínicas.</div>
+      </div>
+      <div class="rung new">
+        <div class="name">Canje<span class="tag">Nuevo</span></div>
+        <div class="price">Sin dinero</div>
+        <div class="desc">Publicidad a cambio de productos o servicios valorizados al precio de lista del plan: estadías, cenas, mantenciones, materiales, premios para concursos al aire. Sirve para llenar parrilla y para tener qué regalar en vivo.</div>
+      </div>
+    </div>
+    <div class="read stack">
+      <h3>Una regla para el canje</h3>
+      <p>El canje no se anota como venta. Se usa para tres cosas: llenar los espacios vacíos de la parrilla mientras la radio se llena, tener premios que entregar al aire, y conseguir el testimonio de un negocio conocido que después sirve para vender a los que sí pagan. Como máximo, tres canjes activos a la vez.</p>
+    </div>
+  </div>
+</section>
+
+<section id="modelo">
+  <div class="wrap stack-lg">
+    <div>
+      <p class="eyebrow">Metodología</p>
+      <h2>Cómo se decidió por quién partir</h2>
+      <p class="lead read">Cada empresa se evaluó en cinco dimensiones que suman 100 puntos. La pregunta que responde el puntaje no es "cuál es la empresa más grande", sino <b>cuál cierra antes y sigue pagando el mes siguiente</b>. Por eso una funeraria de Rancagua puntúa más alto que una cadena nacional con sucursal en la ciudad.</p>
+    </div>
+    <div class="criteria">
+      <div class="crit">
+        <span class="w">25 puntos</span>
+        <h4>Poder de pago</h4>
+        <p>Si el negocio puede sostener $150.000 o más al mes sin pensarlo dos veces. Mide tamaño y margen, no facturación declarada.</p>
+      </div>
+      <div class="crit">
+        <span class="w">25 puntos</span>
+        <h4>Afinidad con la audiencia</h4>
+        <p>Cuánto se parece el cliente del negocio al oyente de una radio de 80s y 90s con noticias: adulto de 30 a 60 años, de Rancagua y Machalí.</p>
+      </div>
+      <div class="crit">
+        <span class="w">20 puntos</span>
+        <h4>Recompra</h4>
+        <p>Si el rubro necesita avisar todo el año o solo en temporada. Un lubricentro avisa siempre; un preuniversitario, dos meses.</p>
+      </div>
+      <div class="crit">
+        <span class="w">20 puntos</span>
+        <h4>Acceso al decisor</h4>
+        <p>Si el que firma está en la comuna. Este es el criterio que más pesa en la práctica: el dueño que contesta su propio teléfono cierra en una visita.</p>
+      </div>
+      <div class="crit">
+        <span class="w">10 puntos</span>
+        <h4>Canje y contenido</h4>
+        <p>Si puede pagar en especies o dar premios para el aire. Es la salida cuando no hay presupuesto en efectivo.</p>
+      </div>
+    </div>
+    <div class="read stack">
+      <h3>Los cortes</h3>
+      <ul class="list">
+        <li><b>84 puntos o más — Prioridad A.</b> 17 empresas. Se contactan en las semanas 1 a 3, cuando todavía tienes toda la energía y ningún caso de éxito que mostrar; por eso van las de decisión más rápida.</li>
+        <li><b>Entre 78 y 83 — Prioridad B.</b> 31 empresas. Semanas 4 a 8, ya con uno o dos auspiciadores al aire para nombrar como referencia.</li>
+        <li><b>Menos de 78 — Prioridad C.</b> 19 empresas. Canje, plan de entrada, o esperar a que la radio tenga números de audiencia que mostrar.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="base">
+  <div class="wrap stack-lg">
+    <div>
+      <p class="eyebrow">Base de datos</p>
+      <h2>Las 67 empresas, ordenadas</h2>
+      <p class="lead read">Filtra por comuna, rubro o prioridad. La misma tabla está en el archivo <span style="font-family:var(--mono);font-size:.85em">Base_Auspiciadores_EmergeFM.csv</span> del escritorio, con columnas vacías para llevar el seguimiento de cada gestión.</p>
+    </div>
+    <div>
+      <div class="toolbar">
+        <div class="chips" role="group" aria-label="Filtrar por prioridad">
+          <button class="chip" data-pri="todas" aria-pressed="true">Todas</button>
+          <button class="chip" data-pri="A" aria-pressed="false">Prioridad A</button>
+          <button class="chip" data-pri="B" aria-pressed="false">Prioridad B</button>
+          <button class="chip" data-pri="C" aria-pressed="false">Prioridad C</button>
+        </div>
+        <select id="fcomuna" aria-label="Filtrar por comuna"><option value="">Todas las comunas</option></select>
+        <select id="frubro" aria-label="Filtrar por rubro"><option value="">Todos los rubros</option></select>
+        <input type="search" id="fbusca" placeholder="Buscar empresa..." aria-label="Buscar empresa">
+        <span class="count" id="conteo"></span>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Empresa y gancho de venta</th><th>Comuna</th><th>Contacto</th>
+              <th>Puntaje</th><th>Plan sugerido</th><th>Prioridad</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <span><b class="s1" style="background:var(--copper)"></b>Pago</span>
+        <span><b class="s2" style="background:var(--amber)"></b>Afinidad</span>
+        <span><b class="s3" style="background:var(--slate)"></b>Recompra</span>
+        <span><b class="s4" style="background:var(--ok)"></b>Acceso al decisor</span>
+        <span><b class="s5" style="background:var(--ink-3)"></b>Canje</span>
+      </div>
+    </div>
+    <div class="note">
+      <h3>Antes de llamar: verifica el dato</h3>
+      <p>Los teléfonos y direcciones vienen de directorios comerciales, sitios web y redes sociales públicas, y algunos pueden estar desactualizados. La columna <b>Dato verificado</b> del CSV parte en "Por confirmar" a propósito: revisa cada ficha en Google Maps antes de marcar y, si el número cambió, corrígelo ahí mismo. Diez minutos de verificación evitan una mañana de llamadas a números muertos.</p>
+    </div>
+  </div>
+</section>
+
+<section id="primeros">
+  <div class="wrap stack-lg">
+    <div>
+      <p class="eyebrow">Ronda 1</p>
+      <h2>Los cinco primeros movimientos</h2>
+      <p class="lead read">No partas por la empresa más grande. Parte por la que puede decir que sí esta semana, porque el primer auspiciador al aire es el argumento de venta del segundo.</p>
+    </div>
+    <div class="moves">
+      <div class="move">
+        <div class="who">Cámara Regional de Comercio, Servicios y Turismo</div>
+        <p class="why">No es un cliente: es el atajo. Agrupa al comercio de Rancagua y O'Higgins y cumplió cien años en 2025. Un espacio semanal gratuito sobre el comercio local te da acceso a decenas de dueños en una sola conversación, y credibilidad frente a todos los demás de esta lista.</p>
+        <span class="ask">Pedir: presentación de 10 minutos en reunión de directorio · Germán Riesco 177 · (72) 2585710</span>
+      </div>
+      <div class="move">
+        <div class="who">Las cinco funerarias de calle Matta</div>
+        <p class="why">Riquelme, Rodríguez, Renacer y Paz están a metros unas de otras. Es el rubro que más ha auspiciado radio adulta en Chile, decide el dueño, y el mensaje es de servicio permanente, no de temporada. Visítalas el mismo día y ofrece exclusividad de rubro a la primera que firme: eso convierte la competencia entre ellas en tu argumento de cierre.</p>
+        <span class="ask">Pedir: plan L-V $200.000 o entrada $100.000, con exclusividad 6 meses</span>
+      </div>
+      <div class="move">
+        <div class="who">Hotel Termas de Cauquenes</div>
+        <p class="why">Ícono turístico de Machalí, público adulto regional y contacto directo por correo con la gerencia. Es el mejor canje disponible: estadías y spa como premios al aire te dan algo que regalar en cada programa durante meses, y el auspicio de un lugar reconocido le da estatura a la parrilla.</p>
+        <span class="ask">Pedir: canje mixto — parte en dinero, parte en estadías para concursos · alvaro@htdc.cl</span>
+      </div>
+      <div class="move">
+        <div class="who">Casa Zúñiga</div>
+        <p class="why">Multitienda regional con casa matriz en Rancagua, tarjeta de crédito propia y público exactamente adulto. Es el único de la lista que puede tomar el plan de $500.000 y decidirlo sin consultar a Santiago. Requiere propuesta escrita y reunión formal: prepárala con las cifras de tus redes y el perfil de audiencia.</p>
+        <span class="ask">Pedir: reunión con gerencia comercial · Juan Nicolás Rubio 348 · (72) 2331100</span>
+      </div>
+      <div class="move">
+        <div class="who">Supermercado Ramírez y el comercio de Arturo Prat, Machalí</div>
+        <p class="why">Machalí está subrepresentada en la lista y es la mitad de tu nombre comercial. Una tarde recorriendo Arturo Prat con el plan Vitrina de $50.000 puede dejarte tres clientes chicos, cobertura visible en la comuna, y el argumento territorial que después usas con la Municipalidad de Machalí.</p>
+        <span class="ask">Pedir: plan Vitrina $50.000, cierre en el mostrador</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="plan">
+  <div class="wrap stack-lg">
+    <div>
+      <p class="eyebrow">Ejecución</p>
+      <h2>Ocho semanas, en orden</h2>
+      <p class="lead read">Con dedicación completa, el ritmo sostenible es de 10 a 15 contactos nuevos por semana más el seguimiento de los anteriores. Estas ocho semanas son una secuencia real: cada etapa depende de lo que produjo la anterior.</p>
+    </div>
+    <div class="weeks">
+      <div class="week">
+        <span class="wk">Semana 1</span>
+        <h4>Preparar el material</h4>
+        <p>Corregir la cotización con los cinco arreglos. Verificar los 17 teléfonos de prioridad A en Google Maps. Grabar tres demos de frase: una funeraria, una ferretería, una clínica dental. Nadie compra sin escuchar cómo suena.</p>
+      </div>
+      <div class="week">
+        <span class="wk">Semana 2</span>
+        <h4>Calle Matta y la Cámara</h4>
+        <p>Visitar las cinco funerarias en un día. Pedir la reunión con la Cámara de Comercio. Enviar los correos a Termas de Cauquenes y a las corredoras de propiedades, que tienen email público.</p>
+      </div>
+      <div class="week">
+        <span class="wk">Semana 3</span>
+        <h4>Cerrar los dos primeros</h4>
+        <p>Seguimiento de todo lo de la semana 2 y cierre de al menos dos auspiciadores, aunque sean de plan de entrada. Sacarlos al aire de inmediato y grabar el testimonio.</p>
+      </div>
+      <div class="week">
+        <span class="wk">Semana 4</span>
+        <h4>Machalí completo</h4>
+        <p>Recorrido de Arturo Prat y Centro Machalí con el plan Vitrina. Presentarse en la Municipalidad de Machalí para inscribirse como proveedor: el avisaje municipal es lento pero es el contrato más grande del listado.</p>
+      </div>
+      <div class="week">
+        <span class="wk">Semanas 5-6</span>
+        <h4>Salud y automotriz</h4>
+        <p>Las clínicas dentales, oftalmológicas y las automotoras de Rancagua, ya con clientes al aire que nombrar. Es el bloque de mayor ticket promedio de la ronda 2.</p>
+      </div>
+      <div class="week">
+        <span class="wk">Semanas 7-8</span>
+        <h4>Barrer la ronda 2 y revisar</h4>
+        <p>Ferreterías, veterinarias, talleres y retail local. Al cerrar la semana 8: contar cierres, ticket promedio y de qué rubro salieron, y reordenar la lista con datos propios en vez de estimaciones.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="guion">
+  <div class="wrap stack-lg">
+    <div>
+      <p class="eyebrow">Herramienta</p>
+      <h2>El guion de los primeros noventa segundos</h2>
+      <p class="lead read">En venta local, el error habitual es abrir con los planes. El precio va al final, después de que el dueño ya se imaginó su negocio sonando en la radio.</p>
+    </div>
+    <div class="script read">
+      <p><span class="who">Apertura, de pie en el mostrador</span>"Buenos días, soy Farid Zerene, director de Radio Emerge 105.5. No vengo a venderle nada todavía: vengo a mostrarle cómo sonaría su negocio en la radio." <i>(Mostrar el celular y reproducir la frase demo del rubro, 20 segundos.)</i></p>
+      <p><span class="who">Audiencia, en una sola línea</span>"Somos la radio de los 80 y los 90 con noticias de la región. Nos escucha gente de 30 a 60 años, de Rancagua y Machalí, que anda en el auto o trabajando. Son sus clientes."</p>
+      <p><span class="who">La pregunta que abre la conversación</span>"¿Cómo se entera hoy la gente de lo que usted vende?" <i>(Callarse y escuchar. Lo que responda es el argumento con el que va a cerrar.)</i></p>
+      <p><span class="who">El precio, recién ahora</span>"Hay un plan de entrada de $50.000 al mes: tres frases diarias más una publicación en nuestras redes. Y si prefiere, los primeros diez auspiciadores quedan con el precio congelado seis meses."</p>
+      <p><span class="who">El cierre</span>"¿Le parece que le prepare la frase con el nombre de su local y se la traigo el jueves? Si le gusta cómo suena, partimos el lunes."</p>
+    </div>
+    <div class="read stack">
+      <h3>Tres reglas de la visita</h3>
+      <ul class="list">
+        <li><b>Llevar el audio.</b> La frase grabada con el nombre del negocio convierte más que cualquier PDF. Grábala antes de ir, aunque no te hayan pedido nada.</li>
+        <li><b>Nunca dejar solo la cotización.</b> Si el dueño no está, anota su nombre y a qué hora llega, y vuelve. Dejar el papel en el mostrador es perder la visita.</li>
+        <li><b>Anotar todo el mismo día.</b> Nombre del que atendió, qué dijo, cuándo volver. Esa columna del CSV es la que hace la diferencia al segundo mes.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="ampliar">
+  <div class="wrap stack-lg">
+    <div>
+      <p class="eyebrow">Siguiente paso</p>
+      <h2>Cómo hacer crecer esta lista</h2>
+      <p class="lead read">67 empresas alcanzan para el primer trimestre. Estas cuatro fuentes te permiten duplicar la base sin pagar nada, con datos más frescos que cualquier directorio web.</p>
+    </div>
+    <div class="read">
+      <ul class="list">
+        <li><b>Google Maps por cuadrícula.</b> Busca por rubro y comuna, y recorre calle por calle las arterias comerciales: Independencia, Astorga, Millán y Brasil en Rancagua; Arturo Prat y San Juan en Machalí. Cada ficha trae teléfono, horario y sitio web actualizados por el propio dueño.</li>
+        <li><b>Instagram local.</b> Busca la etiqueta de ubicación de Rancagua y Machalí y revisa quién publica promociones cada semana. Un negocio que ya invierte tiempo en promocionarse es un negocio que entiende para qué sirve la publicidad.</li>
+        <li><b>La Cámara Regional de Comercio.</b> Si consigues el espacio semanal, pide el directorio de socios. Es la lista que ningún buscador te va a dar.</li>
+        <li><b>Tus propios auspiciadores.</b> Al mes de estar al aire, pregúntale a cada cliente por dos colegas de otro rubro que podrían interesarse. La referencia de un par vale más que veinte llamadas frías.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap stack">
+    <p><b>Nota sobre los datos.</b> Los nombres de empresa, direcciones, teléfonos y perfiles corresponden a información publicada en directorios comerciales, sitios web institucionales y redes sociales abiertas, consultada en septiembre de 2026. Los puntajes, planes sugeridos y ganchos de venta son estimaciones de este informe, no datos declarados por las empresas. Verifica cada contacto antes de usarlo.</p>
+    <p class="srcs">Fuentes consultadas: elrancaguino.cl · mercantil.com · inforedchile.cl · amarillas.cl · infoisinfo.cl · mundochileno.com · defunerarias.info · ferreteriass.cl · automotorasenchile.com · casazuniga.cl · clinicaisamedica.cl · fusat.cl · clinicavision.cl · centrooftalmologicolaser.cl · clinicaodontologica.cl · clinicasantaantonia.cl · dentalrancagua.cl · cleversalud.cl · ceoft.cl · arrayanveterinaria.cl · agendapro.com · htdc.cl · sernatur.cl · lahaciendarestaurante.cl · invitalo.cl · weiser.cl · anamarialillo.cl · silviacorreabaeza.cl · casasrancagua.cl · toppropiedades.cl · centromachali.cl · machali.cl · tallermecanico.top · sointra.cl · comercialmillan.cl · wellhub.com · gimnasiopacific.cl · acunaehijos.cl · ipsantotomas.cl · cpech.cl · unosalud.cl · clinicasantablanca.cl · 3v.cl · construmart.cl · superdesalud.gob.cl · Instagram y Facebook de los negocios citados.</p>
+  </div>
+</footer>
+
+<script>
+const DATA = /*__DATA__*/[];
+
+const tbody = document.getElementById('tbody');
+const conteo = document.getElementById('conteo');
+const selComuna = document.getElementById('fcomuna');
+const selRubro = document.getElementById('frubro');
+const busca = document.getElementById('fbusca');
+const chips = Array.from(document.querySelectorAll('.chip'));
+let pri = 'todas';
+
+const comunas = [...new Set(DATA.map(d => d.comuna))].sort();
+comunas.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; selComuna.appendChild(o); });
+const rubros = [...new Set(DATA.map(d => d.rubro))].sort();
+rubros.forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; selRubro.appendChild(o); });
+
+function letra(t){ return t.trim().charAt(0); }
+
+function render(){
+  const q = busca.value.trim().toLowerCase();
+  const c = selComuna.value, r = selRubro.value;
+  const rows = DATA.filter(d =>
+    (pri === 'todas' || letra(d.tier) === pri) &&
+    (!c || d.comuna === c) && (!r || d.rubro === r) &&
+    (!q || (d.nombre + ' ' + d.rubro + ' ' + d.direccion).toLowerCase().includes(q))
+  );
+  tbody.innerHTML = rows.map((d, i) => {
+    const L = letra(d.tier);
+    const seg = [['s1', d.P], ['s2', d.A], ['s3', d.R], ['s4', d.A2], ['s5', d.C]]
+      .map(([cl, v]) => '<span class="' + cl + '" style="width:' + v + '%"></span>').join('');
+    const contacto = [
+      d.direccion && d.direccion !== '—' ? '<span class="adr">' + d.direccion + '</span>' : '',
+      d.telefono && d.telefono !== '—' ? d.telefono : '',
+      d.web && d.web !== '—' ? '<br>' + d.web : ''
+    ].join('');
+    return '<tr>' +
+      '<td class="rank">' + (i + 1) + '</td>' +
+      '<td class="firm"><span class="nm">' + d.nombre + '</span><span class="ru">' + d.rubro + '</span>' +
+        '<span class="hook">' + d.gancho + '</span></td>' +
+      '<td>' + d.comuna + '</td>' +
+      '<td class="contact">' + contacto + '</td>' +
+      '<td class="score"><span class="scorenum">' + d.score + '</span><span class="bar">' + seg + '</span></td>' +
+      '<td class="plan">' + d.plan + '</td>' +
+      '<td><span class="pri ' + L + '">' + L + '</span></td>' +
+      '</tr>';
+  }).join('');
+  conteo.textContent = rows.length + ' de ' + DATA.length + ' empresas';
+}
+
+chips.forEach(ch => ch.addEventListener('click', () => {
+  chips.forEach(o => o.setAttribute('aria-pressed', String(o === ch)));
+  pri = ch.dataset.pri;
+  render();
+}));
+[selComuna, selRubro].forEach(el => el.addEventListener('change', render));
+busca.addEventListener('input', render);
+render();
+</script>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Base · Emerge Noticias</title>
+<!--
+  Cintillo (reloj, edición y noticias que corren) + mosca EN VIVO · 105.5 de «Emerge Noticias».
+  Es gc-noticias.html en modo=base: existe aparte para que en OBS se pueda elegir con «Archivo local»
+  → Examinar, igual que la placa, sin tener que escribir ?modo=base en una URL.
+-->
+<style>html, body { margin: 0; background: transparent; }</style>
+<script>
+  (function () {
+    var q = location.search ? location.search.slice(1) : '';
+    if (!/(^|&)modo=/.test(q)) q = 'modo=base' + (q ? '&' + q : '');
+    location.replace('gc-noticias.html?' + q + location.hash);
+  })();
+</script>
+</head>
+<body></body>
+</html>

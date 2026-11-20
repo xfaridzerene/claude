@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Emerge FM · YouTube en vivo</title>
+<style>
+@font-face{font-family:Unb;src:url(assets/fuentes/Unbounded-ExtraBold.ttf);font-weight:800}
+@font-face{font-family:Unb;src:url(assets/fuentes/Unbounded-SemiBold.ttf);font-weight:600}
+@font-face{font-family:SG;src:url(assets/fuentes/SpaceGrotesk-Regular.ttf);font-weight:400}
+@font-face{font-family:SG;src:url(assets/fuentes/SpaceGrotesk-Medium.ttf);font-weight:500}
+@font-face{font-family:SG;src:url(assets/fuentes/SpaceGrotesk-Bold.ttf);font-weight:700}
+:root{--verde:#00E6AB;--violeta:#7B61FF;--naranja:#FF6B35;--ambar:#FFC93C;--azul:#00AEEF;--gris:#8C8C8C;--suave:#F4F4F4;--linea:#E3E3E3}
+@page{size:A4;margin:13mm 15mm 13mm}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff}
+body{font-family:SG,"Segoe UI Emoji",sans-serif;color:#111;font-size:9.4pt;line-height:1.42;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.cab{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:.35mm solid #000;padding-bottom:3mm;margin-bottom:5mm}
+.cab img{height:9mm}
+.cab .der{text-align:right}
+h1{font-family:Unb,sans-serif;font-weight:800;font-size:17pt;line-height:1.05;letter-spacing:-.01em}
+.vers{font-weight:500;font-size:7pt;letter-spacing:.18em;text-transform:uppercase;color:var(--gris)}
+.guia{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;margin-bottom:6mm}
+.paso{background:var(--suave);border-radius:2mm;padding:3mm 3.4mm;font-size:8.4pt;line-height:1.35}
+.paso b.n{display:inline-flex;align-items:center;justify-content:center;width:5mm;height:5mm;border-radius:50%;background:#000;color:var(--verde);font-family:Unb;font-size:7pt;margin-right:1.6mm}
+.paso strong{display:block;font-size:9pt;margin:1.4mm 0 .6mm}
+.card{border:.3mm solid #000;border-radius:2.2mm;margin-bottom:5.5mm;break-inside:avoid;page-break-inside:avoid;overflow:hidden}
+.card .top{display:flex;justify-content:space-between;align-items:center;padding:2.6mm 4mm}
+.card .top h2{font-family:Unb,sans-serif;font-weight:800;font-size:12pt;line-height:1}
+.card .top span{font-weight:700;font-size:7.2pt;letter-spacing:.14em;text-transform:uppercase}
+.c-not .top{background:var(--ambar)}
+.c-man .top{background:var(--violeta);color:#fff}
+.c-via .top{background:var(--verde)}
+.c-fur .top{background:var(--naranja)}
+.c-247 .top{background:var(--azul)}
+.c-fijo .top{background:#000;color:#fff}
+.c-fijo .top h2{color:var(--verde)}
+.cuerpo{padding:3.2mm 4mm 3.6mm}
+.lbl{display:flex;justify-content:space-between;font-weight:700;font-size:6.8pt;letter-spacing:.16em;text-transform:uppercase;color:var(--gris);margin:2.6mm 0 1.2mm}
+.lbl:first-child{margin-top:0}
+.lbl em{font-style:normal;letter-spacing:.06em;text-transform:none;font-weight:500}
+ul.tit{list-style:none}
+ul.tit li{background:var(--suave);border-radius:1.4mm;padding:1.7mm 2.6mm;margin-bottom:1.2mm;font-weight:500;font-size:9pt}
+mark{background:#FFE9A8;color:inherit;border-radius:.6mm;padding:0 .5mm}
+.txt{white-space:pre-wrap;background:var(--suave);border-radius:1.4mm;padding:2.6mm 3mm;font-size:8.8pt;line-height:1.42}
+.pega{border:.3mm dashed var(--gris);border-radius:1.4mm;padding:1.5mm 3mm;margin:1.4mm 0;font-size:8pt;color:#555}
+.pega b{color:#000}
+.hash{font-weight:700;font-size:8.8pt;background:var(--suave);border-radius:1.4mm;padding:1.7mm 3mm}
+.tags{font-size:8.4pt;line-height:1.45;border:.3mm solid var(--linea);border-radius:1.4mm;padding:2mm 3mm}
+.nueva{display:inline-block;background:#000;color:var(--naranja);font-weight:700;font-size:6.6pt;letter-spacing:.14em;text-transform:uppercase;padding:.5mm 1.8mm;border-radius:1mm;margin-left:2mm;vertical-align:1mm}
+.pie{margin-top:2mm;font-size:7.6pt;color:var(--gris);text-align:center;letter-spacing:.06em}
+</style>
+</head>
+<body>
+
+<div class="cab">
+  <div>
+    <div class="vers">YouTube · transmisiones en vivo</div>
+    <h1>Títulos, descripciones<br>y etiquetas</h1>
+  </div>
+  <div class="der">
+    <img src="assets/emerge-fm-105.5-horizontal-color-sobre-blanco.svg" alt="Emerge FM 105.5">
+    <div class="vers" style="margin-top:1.6mm">Noviembre 2026</div>
+  </div>
+</div>
+
+<div class="guia">
+  <div class="paso"><b class="n">1</b><strong>Título</strong>Copia el título del programa y cambia la <mark>fecha marcada</mark> por la del día.</div>
+  <div class="paso"><b class="n">2</b><strong>Descripción</strong>Copia el recuadro gris completo y pégalo tal cual: ya trae el bloque fijo y los hashtags.</div>
+  <div class="paso"><b class="n">3</b><strong>Etiquetas</strong>Van en el campo «Etiquetas» (Mostrar más), no en la descripción. Pégalas tal cual, separadas por coma.</div>
+</div>
+
+<!-- ============ EMERGE NOTICIAS ============ -->
+<div class="card c-not">
+  <div class="top"><h2>Emerge Noticias</h2><span>4 ediciones</span></div>
+  <div class="cuerpo">
+    <div class="lbl">Títulos</div>
+    <ul class="tit">
+      <li>🔴 EN VIVO | Emerge Noticias AM · <mark>12 de noviembre</mark> · Noticias Región de O'Higgins</li>
+      <li>🔴 EN VIVO | Emerge Noticias Mediodía · <mark>12 de noviembre</mark> · Noticias Región de O'Higgins</li>
+      <li>🔴 EN VIVO | Emerge Noticias Noche · <mark>12 de noviembre</mark> · Noticias Región de O'Higgins</li>
+    </ul>
+    <div class="lbl">Descripción</div>
+<div class="txt">🔴 Emerge Noticias EN VIVO: las noticias de Rancagua, Machalí y la región de O'Higgins, contadas desde aquí.
+
+Emerge Noticias es el informativo de Emerge FM 105.5: actualidad regional, servicios, tránsito, clima, deportes y lo que pasa en cada comuna de O'Higgins.
+
+🕗 Primera Edición · lunes a viernes, 08:00 a 09:00
+🕛 Edición Mediodía · lunes a viernes, 12:00 a 13:00
+🌙 Edición Central · lunes, miércoles y viernes, 20:00 a 21:00
+☀️ Edición Fin de Semana · sábado y domingo, 08:00 a 10:00
+
+¿Pasa algo en tu comuna? Mándanos fotos, videos o tu denuncia al WhatsApp.
++56 9 5703 1055</div>
+    <div class="pega">↳ Aquí pega el <b>bloque fijo</b> (última página)</div>
+    <div class="hash">#EmergeNoticias #NoticiasRancagua #OHiggins #Rancagua #Machalí #NoticiasChile</div>
+    <div class="lbl">Etiquetas <em data-cuenta></em></div>
+    <div class="tags">noticias rancagua, noticias o'higgins, noticias región de o'higgins, rancagua hoy, noticias machalí, noticias en vivo chile, emerge noticias, noticiero regional, noticias sexta región, noticias de hoy rancagua, emerge fm, radio emerge fm rancagua, radioemergefm</div>
+  </div>
+</div>
+
+<!-- ============ EMERGE TU MAÑANA ============ -->
+<div class="card c-man">
+  <div class="top"><h2>Emerge tu mañana</h2><span>Lunes a viernes · 10:00 a 12:00</span></div>
+  <div class="cuerpo">
+    <div class="lbl">Título</div>
+    <ul class="tit">
+      <li>🔴 EN VIVO | Emerge tu mañana con Gabriel Figueroa ☀️ · <mark>12 de noviembre</mark></li>
+    </ul>
+    <div class="lbl">Descripción</div>
+<div class="txt">☀️ Emerge tu mañana EN VIVO con Gabriel Figueroa: el matinal de Rancagua con conversación, actualidad y la mejor música de los 80 y 90.
+
+Compañía para tu mañana de lunes a viernes, de 10:00 a 12:00, en Emerge FM 105.5. Conversamos de lo que pasa en Rancagua, Machalí y O'Higgins, recibimos invitados y ponemos los clásicos que te sabes de memoria.
+
+Mándanos tus saludos, peticiones y opiniones al WhatsApp: los leemos al aire.
++56 9 5703 1055</div>
+    <div class="pega">↳ Aquí pega el <b>bloque fijo</b> (última página)</div>
+    <div class="hash">#EmergeTuMañana #Rancagua #Música80y90 #MatinalEnVivo #OHiggins</div>
+    <div class="lbl">Etiquetas <em data-cuenta></em></div>
+    <div class="tags">matinal en vivo, radio rancagua, emerge tu mañana, gabriel figueroa, música de los 80, música de los 90, clásicos 80 y 90, radio en vivo chile, programa de radio en vivo, rancagua en vivo, radio o'higgins, emerge fm, radio emerge fm rancagua, radioemergefm</div>
+  </div>
+</div>
+
+<!-- ============ VIAJE SIN RUMBO ============ -->
+<div class="card c-via">
+  <div class="top"><h2>Viaje sin Rumbo</h2><span>Lunes a viernes · 15:00 a 16:00</span></div>
+  <div class="cuerpo">
+    <div class="lbl">Título</div>
+    <ul class="tit">
+      <li>🔴 EN VIVO | Viaje sin Rumbo: recorrido por la música chilena con Valentina Sepúlveda ✈️ · <mark>12 de noviembre</mark></li>
+    </ul>
+    <div class="lbl">Descripción</div>
+<div class="txt">🗺️ Viaje sin Rumbo EN VIVO con Valentina Sepúlveda: una hora de música chilena.
+
+Un recorrido por calles, carreteras y escenarios de Chile, sin destino fijo. Clásicos y nuevos sonidos de la música chilena, de lunes a viernes de 15:00 a 16:00 en Emerge FM 105.5.
+
+¿Qué artista chileno quieres escuchar? Pídelo por WhatsApp.
++56 9 5703 1055</div>
+    <div class="pega">↳ Aquí pega el <b>bloque fijo</b> (última página)</div>
+    <div class="hash">#ViajeSinRumbo #MúsicaChilena #Rancagua #PopChileno #RockChileno</div>
+    <div class="lbl">Etiquetas <em data-cuenta></em></div>
+    <div class="tags">música chilena, música chilena en vivo, pop chileno, rock chileno, artistas chilenos, cantantes chilenas, música nacional, viaje sin rumbo, valentina sepúlveda, radio chilena, radio rancagua, emerge fm, radio emerge fm rancagua, radioemergefm</div>
+  </div>
+</div>
+
+<!-- ============ LA CIUDAD DE LA FURIA ============ -->
+<div class="card c-fur">
+  <div class="top"><h2>La Ciudad de la Furia</h2><span>Lunes a viernes · 18:00 a 20:00</span></div>
+  <div class="cuerpo">
+    <div class="lbl">Título</div>
+    <ul class="tit">
+      <li>🔴 EN VIVO | La Ciudad de la Furia: lo mejor de los 80s y 90s con Kaco López 🎸 · <mark>12 de noviembre</mark></li>
+    </ul>
+    <div class="lbl">Descripción <span class="nueva">Nueva · revisar</span></div>
+<div class="txt">🎸 La Ciudad de la Furia EN VIVO con Kaco López: lo mejor de los 80 y 90 para la tarde de Rancagua, con música y conversación.
+
+De lunes a viernes, de 18:00 a 20:00, en Emerge FM 105.5. Kaco te acompaña de vuelta a casa con los clásicos que marcaron dos décadas y lo que se habla en la ciudad.
+
+Pide tu canción o manda tu saludo al WhatsApp: sale al aire.
++56 9 5703 1055</div>
+    <div class="pega">↳ Aquí pega el <b>bloque fijo</b> (última página)</div>
+    <div class="hash">#LaCiudadDeLaFuria #Rancagua #Música80y90 #KacoLópez #RadioEnVivo</div>
+    <div class="lbl">Etiquetas <em data-cuenta></em></div>
+    <div class="tags">la ciudad de la furia, kaco lópez, música de los 80 y 90, clásicos de los 80, clásicos de los 90, éxitos 80 y 90, música retro, rock de los 80, programa de radio rancagua, radio en vivo, emerge fm, radio emerge fm rancagua, radioemergefm</div>
+  </div>
+</div>
+
+<!-- ============ SEÑAL 24/7 ============ -->
+<div class="card c-247">
+  <div class="top"><h2>Señal continua</h2><span>24/7</span></div>
+  <div class="cuerpo">
+    <div class="lbl">Descripción</div>
+<div class="txt">📻 Emerge FM 105.5 EN VIVO · Radio online de Rancagua con música de los 80 y 90 las 24 horas, noticias de O'Higgins y programas en vivo.
+
+Los clásicos en inglés y español que marcaron dos décadas, más la actualidad de Rancagua, Machalí y toda la región.
+
+📅 Programación de lunes a viernes:
+08:00 · Emerge Noticias, Primera Edición
+10:00 · Emerge tu mañana, con Gabriel Figueroa
+12:00 · Emerge Noticias, Edición Mediodía
+15:00 · Viaje sin Rumbo, con Valentina Sepúlveda
+18:00 · La Ciudad de la Furia, con Kaco López
+20:00 · Emerge Noticias, Edición Central (lunes, miércoles y viernes)</div>
+    <div class="pega">↳ Aquí pega el <b>bloque fijo</b> (última página)</div>
+    <div class="hash">#RadioEnVivo #Música80s #Música90s #Rancagua #RadioChilena</div>
+    <div class="lbl">Etiquetas <em data-cuenta></em></div>
+    <div class="tags">radio en vivo, radio online chile, radio rancagua, música de los 80 y 90, clásicos 80 y 90, música retro, éxitos de los 80, éxitos de los 90, radio chilena en vivo, emerge fm, emerge fm 105.5, 105.5 rancagua, radio emerge fm rancagua, radioemergefm</div>
+  </div>
+</div>
+
+<!-- ============ BLOQUE FIJO ============ -->
+<!-- Fuente única del bloque fijo: el script lo inserta en cada descripción. No se imprime. -->
+<div class="card c-fijo" id="fijo" style="display:none">
+  <div class="top"><h2>Bloque fijo</h2><span>Va en todas · antes de los hashtags</span></div>
+  <div class="cuerpo">
+<div class="txt">📻 Emerge FM 105.5 · Rancagua en frecuencia
+Escúchanos en el 105.5 FM en Rancagua, Machalí y toda la región de O'Higgins, o en vivo en https://emergefm.cl
+
+💬 WhatsApp de la radio: +56 9 5703 1055 → https://wa.me/56957031055
+📸 Instagram: @radioemergefm → https://instagram.com/radioemergefm
+👍 Facebook: Radio Emerge FM Rancagua
+
+🔔 Suscríbete y activa la campana para que te avisemos cada vez que estemos en vivo.
+
+¿Tienes un negocio en Rancagua o Machalí? Haz que suene en Emerge: publicidad@emergefm.cl
+
+Lo que suena, emerge.</div>
+  </div>
+</div>
+
+<div class="pie">Emerge FM 105.5 · Rancagua en frecuencia · emergefm.cl · @radioemergefm</div>
+
+<script>
+// Arma cada descripción completa: texto del programa + bloque fijo + hashtags, en un solo recuadro.
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const fijo = document.querySelector('#fijo .txt').textContent.trim();
+document.querySelectorAll('.card:not(.c-fijo)').forEach((card, i) => {
+  if (i > 0) card.style.breakBefore = 'page';
+  const txt = card.querySelector('.txt'), hash = card.querySelector('.hash');
+  txt.innerHTML = esc(txt.textContent.trim()) + '\n\n' + esc(fijo) + '\n\n<b>' + esc(hash.textContent.trim()) + '</b>';
+  card.querySelector('.pega').remove();
+  hash.remove();
+  const lbl = txt.previousElementSibling;
+  lbl.firstChild.textContent = 'Descripción completa · lista para pegar ';
+});
+// Cuenta los caracteres de cada lista de etiquetas (YouTube acepta hasta 500).
+document.querySelectorAll('.tags').forEach(t => {
+  const n = t.textContent.trim().length;
+  const em = t.previousElementSibling.querySelector('[data-cuenta]');
+  if (em) em.textContent = n + ' / 500 caracteres';
+});
+</script>
+</body>
+</html>

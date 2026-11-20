@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Opciones GC Emerge Noticias</title>
+<style>
+@font-face { font-family: 'Unbounded'; src: url('file:///C:/Users/farid/Desktop/claude%20code/emerge-noticias-ig/fuentes/Unbounded-Black.ttf'); font-weight: 900; }
+@font-face { font-family: 'Unbounded'; src: url('file:///C:/Users/farid/Desktop/claude%20code/emerge-noticias-ig/fuentes/Unbounded-ExtraBold.ttf'); font-weight: 800; }
+@font-face { font-family: 'Unbounded'; src: url('file:///C:/Users/farid/Desktop/claude%20code/emerge-noticias-ig/fuentes/Unbounded-Bold.ttf'); font-weight: 700; }
+@font-face { font-family: 'Space Grotesk'; src: url('file:///C:/Users/farid/Desktop/claude%20code/emerge-noticias-ig/fuentes/SpaceGrotesk-Medium.ttf'); font-weight: 500; }
+@font-face { font-family: 'Space Grotesk'; src: url('file:///C:/Users/farid/Desktop/claude%20code/emerge-noticias-ig/fuentes/SpaceGrotesk-SemiBold.ttf'); font-weight: 600; }
+@font-face { font-family: 'Space Grotesk'; src: url('file:///C:/Users/farid/Desktop/claude%20code/emerge-noticias-ig/fuentes/SpaceGrotesk-Bold.ttf'); font-weight: 700; }
+:root { --verde: #00E6AB; --ambar: #FFC93C; --negro: #0A0A0A; --blanco: #fff; --gris: #8C8C8C; --papel: #ECE9E1; --tinta: #101010; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { width: 1960px; background: #121212; font-family: 'Space Grotesk', sans-serif; color: #fff; padding: 20px; }
+h1 { font-family: 'Unbounded'; font-weight: 800; font-size: 34px; margin: 4px 0 18px; }
+h1 span { color: var(--verde); }
+.grilla { display: grid; grid-template-columns: 960px 960px; gap: 0 0; column-gap: 0; }
+.celda { width: 960px; padding: 0 0 22px; }
+.celda + .celda { }
+.rot { display: flex; align-items: baseline; gap: 14px; height: 58px; padding: 10px 6px 0; }
+.rot b { font-family: 'Unbounded'; font-weight: 900; font-size: 30px; color: var(--verde); }
+.rot strong { font-family: 'Unbounded'; font-weight: 800; font-size: 22px; }
+.rot em { font-style: normal; font-size: 17px; color: #bbb; }
+.marco { width: 944px; height: 531px; overflow: hidden; position: relative; border: 2px solid #2a2a2a; }
+.tv { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform: scale(0.49166); transform-origin: 0 0;
+  background: url('file:///C:/Users/farid/Desktop/claude%20code/emerge-noticias-ig/imagenes/plaza-heroes.jpg') center 40% / cover; overflow: hidden; }
+.abs { position: absolute; }
+.iso { width: 60px; height: 60px; }
+
+/* ---------- 1. Formal como los posts IG ---------- */
+.f1 .caja { left: 70px; right: 70px; bottom: 118px; height: 210px; display: flex; background-color: rgba(8,8,8,.94);
+  background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px); background-size: 36px 36px; }
+.f1 .marca { width: 300px; flex: none; display: flex; flex-direction: column; justify-content: center; gap: 12px; padding-left: 40px; border-right: 2px solid rgba(255,255,255,.12); }
+.f1 .marca .n { font-family: 'Unbounded'; font-weight: 800; font-size: 30px; line-height: 1.05; letter-spacing: .02em; }
+.f1 .marca .n span { color: var(--verde); }
+.f1 .txt { padding: 30px 44px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.f1 .epi { align-self: flex-start; background: var(--verde); color: var(--negro); font-family: 'Unbounded'; font-weight: 800; font-size: 22px; letter-spacing: .08em; padding: 7px 16px 6px; }
+.f1 .tit { font-family: 'Unbounded'; font-weight: 800; font-size: 52px; line-height: 1.05; }
+.f1 .baj { font-weight: 500; font-size: 28px; color: #c9c9c9; }
+.f1 .tick { left: 70px; right: 70px; bottom: 56px; height: 56px; display: flex; align-items: center; background: #000; border-top: 2px solid var(--verde); }
+.f1 .tick .h { height: 100%; display: grid; place-items: center; padding: 0 22px; background: var(--verde); color: #000; font-family: 'Unbounded'; font-weight: 800; font-size: 26px; }
+.f1 .tick .t { padding-left: 24px; font-weight: 600; font-size: 25px; white-space: nowrap; color: #e8e8e8; }
+.f1 .tick .t i { color: var(--verde); font-style: normal; padding: 0 16px; }
+.f1 .mosca { right: 70px; top: 56px; display: flex; align-items: center; gap: 12px; background: rgba(8,8,8,.85); padding: 10px 18px; font-weight: 700; font-size: 22px; letter-spacing: .14em; }
+.f1 .mosca .iso { width: 40px; height: 40px; }
+.f1 .mosca span { color: var(--verde); }
+
+/* ---------- 2. Canal 24 horas clásico ---------- */
+.f2 .ult { left: 0; bottom: 290px; height: 58px; display: flex; align-items: center; }
+.f2 .ult .a { height: 100%; display: grid; place-items: center; padding: 0 30px 0 70px; background: var(--ambar); color: #000; font-family: 'Unbounded'; font-weight: 900; font-size: 26px; letter-spacing: .06em; }
+.f2 .ult .b { height: 100%; display: grid; place-items: center; padding: 0 26px; background: #000; color: #fff; font-weight: 700; font-size: 24px; letter-spacing: .14em; }
+.f2 .barra { left: 0; right: 0; bottom: 120px; height: 170px; display: flex; }
+.f2 .logo { width: 370px; flex: none; background: linear-gradient(180deg, #00f2b6, #00b386); display: flex; align-items: center; gap: 16px; padding-left: 70px; color: #000; }
+.f2 .logo .n { font-family: 'Unbounded'; font-weight: 900; font-size: 30px; line-height: 1.02; }
+.f2 .logo .iso { filter: brightness(0); width: 56px; height: 56px; }
+.f2 .titular { flex: 1; background: linear-gradient(180deg, #fff, #e6e6e6); color: #0a0a0a; display: flex; flex-direction: column; justify-content: center; padding: 0 70px 0 40px; gap: 6px; box-shadow: inset 0 -6px 0 rgba(0,0,0,.08); }
+.f2 .titular .tit { font-family: 'Unbounded'; font-weight: 900; font-size: 54px; line-height: 1.02; text-transform: uppercase; letter-spacing: -.01em; }
+.f2 .titular .baj { font-weight: 600; font-size: 28px; color: #333; }
+.f2 .tick { left: 0; right: 0; bottom: 50px; height: 70px; display: flex; align-items: center; background: #0b0b0b; }
+.f2 .tick .h { height: 100%; width: 370px; flex: none; display: flex; align-items: center; gap: 16px; padding-left: 70px; background: #1b1b1b; font-family: 'Unbounded'; font-weight: 800; font-size: 30px; }
+.f2 .tick .h small { font-family: 'Space Grotesk'; font-weight: 700; font-size: 16px; letter-spacing: .14em; color: var(--verde); line-height: 1.1; }
+.f2 .tick .t { padding-left: 30px; font-weight: 700; font-size: 27px; white-space: nowrap; text-transform: uppercase; letter-spacing: .02em; }
+.f2 .tick .t i { display: inline-block; width: 12px; height: 12px; background: var(--verde); margin: 0 22px 4px; }
+.f2 .vivo { right: 70px; top: 56px; display: flex; align-items: stretch; font-family: 'Unbounded'; font-weight: 900; font-size: 24px; }
+.f2 .vivo .a { background: #e0242c; padding: 10px 18px; } .f2 .vivo .b { background: #000; padding: 10px 18px; color: var(--verde); }
+
+/* ---------- 3. Papel y mapa ---------- */
+.f3 .papel { left: 120px; right: 260px; bottom: 140px; height: 190px; background: var(--papel); color: var(--tinta); transform: rotate(-1.2deg);
+  clip-path: polygon(0 3%, 3% 0, 8% 4%, 15% 1%, 22% 3%, 30% 0, 41% 2%, 50% 0, 60% 3%, 71% 1%, 80% 3%, 90% 0, 97% 2%, 100% 0, 99% 30%, 100% 65%, 99% 100%, 92% 97%, 84% 100%, 73% 98%, 62% 100%, 50% 97%, 39% 100%, 27% 98%, 16% 100%, 7% 97%, 0 100%, 1% 60%);
+  box-shadow: 0 20px 40px rgba(0,0,0,.5); padding: 30px 46px; display: flex; flex-direction: column; justify-content: center; gap: 10px;
+  background-image: radial-gradient(rgba(0,0,0,.05) 1px, transparent 1px); background-size: 5px 5px; }
+.f3 .papel .tit { font-family: 'Unbounded'; font-weight: 900; font-size: 52px; line-height: 1.04; position: relative; display: inline-block; }
+.f3 .papel .baj { font-weight: 600; font-size: 27px; color: #3a3a3a; }
+.f3 .plumon { left: 160px; bottom: 228px; width: 880px; height: 40px; }
+.f3 .cinta { width: 130px; height: 40px; background: rgba(255,240,190,.75); box-shadow: 0 2px 4px rgba(0,0,0,.15); }
+.f3 .tirita { background: #101010; color: var(--papel); font-family: 'Unbounded'; font-weight: 800; font-size: 26px; letter-spacing: .06em; padding: 10px 20px 8px; box-shadow: 0 10px 22px rgba(0,0,0,.45); }
+.f3 .pin { width: 34px; height: 34px; border-radius: 50% 50% 50% 0; background: var(--verde); transform: rotate(-45deg); }
+.f3 .tick { left: 0; right: 0; bottom: 34px; height: 64px; background: #f3f0e8; color: #111; display: flex; align-items: center; border-top: 4px solid #111; border-bottom: 4px solid #111; }
+.f3 .tick .h { height: 100%; display: grid; place-items: center; padding: 0 26px 0 60px; background: #111; color: var(--verde); font-family: 'Unbounded'; font-weight: 900; font-size: 28px; }
+.f3 .tick .t { padding-left: 26px; font-weight: 700; font-size: 26px; white-space: nowrap; }
+.f3 .tick .t i { font-style: normal; padding: 0 18px; color: #0a8f6c; }
+.f3 .mosca { left: 70px; top: 56px; transform: rotate(-2deg); background: var(--papel); color: #111; padding: 12px 20px 10px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 22px rgba(0,0,0,.45); font-family: 'Unbounded'; font-weight: 900; font-size: 26px; }
+.f3 .mosca .iso { width: 42px; height: 42px; filter: brightness(0); }
+
+/* ---------- 4. Moderno minimalista ---------- */
+.f4 .scrim { left: 0; right: 0; bottom: 0; height: 520px; background: linear-gradient(transparent, rgba(0,0,0,.55) 35%, rgba(0,0,0,.9)); }
+.f4 .bloque { left: 110px; right: 110px; bottom: 150px; }
+.f4 .sup { display: flex; align-items: center; gap: 18px; font-weight: 700; font-size: 22px; letter-spacing: .24em; color: #ddd; }
+.f4 .sup b { color: var(--verde); font-weight: 700; }
+.f4 .sup .pt { width: 8px; height: 8px; background: var(--verde); border-radius: 50%; }
+.f4 .tit { margin-top: 18px; font-family: 'Unbounded'; font-weight: 700; font-size: 62px; line-height: 1.08; letter-spacing: -.01em; }
+.f4 .linea { margin-top: 22px; width: 220px; height: 4px; background: var(--verde); }
+.f4 .baj { margin-top: 18px; font-weight: 500; font-size: 29px; color: #bdbdbd; }
+.f4 .tick { left: 110px; right: 110px; bottom: 54px; height: 50px; display: flex; align-items: center; border-top: 1px solid rgba(255,255,255,.25); padding-top: 12px; font-size: 24px; }
+.f4 .tick .h { font-family: 'Unbounded'; font-weight: 700; font-size: 24px; color: var(--verde); padding-right: 26px; }
+.f4 .tick .t { color: #d0d0d0; font-weight: 500; white-space: nowrap; }
+.f4 .tick .t i { font-style: normal; color: #666; padding: 0 18px; }
+.f4 .mosca { right: 110px; top: 64px; display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 21px; letter-spacing: .24em; }
+.f4 .mosca .iso { width: 36px; height: 36px; }
+.f4 .mosca span { color: var(--verde); }
+</style></head>
+<body>
+<h1>GC Emerge Noticias · <span>elige una estética</span></h1>
+<div class="grilla">
+
+<div class="celda">
+  <div class="rot"><b>1</b><strong>Formal como los posts IG</strong><em>negro con cuadrícula, epígrafe verde recto</em></div>
+  <div class="marco"><div class="tv f1">
+    <div class="abs mosca"><img class="iso" src="file:///C:/Users/farid/Desktop/claude%20code/emerge-noticias-ig/isotipo.png">EMERGE <span>NOTICIAS</span></div>
+    <div class="abs caja">
+      <div class="marca"><img class="iso" src="file:///C:/Users/farid/Desktop/claude%20code/emerge-noticias-ig/isotipo.png"><div class="n">EMERGE<br><span>NOTICIAS</span></div></div>
+      <div class="txt"><div class="epi">RANCAGUA</div><div class="tit">Corte de agua afecta a 12 mil hogares del centro</div><div class="baj">Essbio estima reponer el servicio a las 18:00 horas</div></div>
+    </div>
+    <div class="abs tick"><div class="h">13:42</div><div class="t">Ruta 5 Sur: tránsito lento en Graneros<i>/</i>Pronostican lluvia para el jueves<i>/</i>O'Higgins recibe a Colo-Colo</div></div>
+  </div></div>
+</div>
+
+<div class="celda">
+  <div class="rot"><b>2</b><strong>Canal 24 horas clásico</strong><em>barra a todo lo ancho, titular grande, cintillo</em></div>
+  <div class="marco"><div class="tv f2">
+    <div class="abs vivo"><div class="a">EN VIVO</div><div class="b">105.5</div></div>
+    <div class="abs ult"><div class="a">ÚLTIMA HORA</div><div class="b">RANCAGUA</div></div>
+    <div class="abs barra">
+      <div class="logo"><img class="iso" src="file:///C:/Users/farid/Desktop/claude%20code/emerge-noticias-ig/isotipo.png"><div class="n">EMERGE<br>NOTICIAS</div></div>
+      <div class="titular"><div class="tit">Corte de agua afecta a 12 mil hogares</div><div class="baj">Essbio estima reponer el servicio a las 18:00 horas</div></div>
+    </div>
+    <div class="abs tick"><div class="h">13:42 <small>EDICIÓN<br>MEDIODÍA</small></div><div class="t">Ruta 5 Sur: tránsito lento en Graneros<i></i>Lluvia el jueves en O'Higgins<i></i>O'Higgins recibe a Colo-Colo</div></div>
+  </div></div>
+</div>
+
+<div class="celda">
+  <div class="rot"><b>3</b><strong>Papel y mapa de la intro</strong><em>recorte de diario, cinta, plumón verde</em></div>
+  <div class="marco"><div class="tv f3">
+    <div class="abs mosca"><img class="iso" src="file:///C:/Users/farid/Desktop/claude%20code/emerge-noticias-ig/isotipo.png">EMERGE NOTICIAS</div>
+    <div class="abs tirita" style="left:110px; bottom:340px; transform:rotate(-3deg); display:flex; align-items:center; gap:14px;"><span class="pin"></span>RANCAGUA</div>
+    <div class="abs papel"><div class="tit">Corte de agua afecta a 12 mil hogares</div><div class="baj">Essbio estima reponer el servicio a las 18:00 horas</div></div>
+    <svg class="abs plumon" viewBox="0 0 880 40" preserveAspectRatio="none"><path d="M6 26 C 200 14, 480 30, 870 16" stroke="#00E6AB" stroke-width="16" stroke-linecap="round" fill="none" opacity=".75"/></svg>
+    <div class="abs cinta" style="left:90px; bottom:300px; transform:rotate(-28deg)"></div>
+    <div class="abs cinta" style="right:230px; bottom:150px; transform:rotate(-22deg)"></div>
+    <div class="abs tick"><div class="h">13:42</div><div class="t">Ruta 5 Sur: tránsito lento en Graneros<i>✱</i>Lluvia el jueves en O'Higgins<i>✱</i>O'Higgins recibe a Colo-Colo</div></div>
+  </div></div>
+</div>
+
+<div class="celda">
+  <div class="rot"><b>4</b><strong>Moderno minimalista</strong><em>sin cajas, degradado, línea verde fina</em></div>
+  <div class="marco"><div class="tv f4">
+    <div class="abs mosca"><img class="iso" src="file:///C:/Users/farid/Desktop/claude%20code/emerge-noticias-ig/isotipo.png">EMERGE <span>NOTICIAS</span></div>
+    <div class="abs scrim"></div>
+    <div class="abs bloque">
+      <div class="sup"><span class="pt"></span><b>EN VIVO</b> · RANCAGUA · EDICIÓN MEDIODÍA</div>
+      <div class="tit">Corte de agua afecta a 12 mil hogares del centro</div>
+      <div class="linea"></div>
+      <div class="baj">Essbio estima reponer el servicio a las 18:00 horas</div>
+    </div>
+    <div class="abs tick"><div class="h">13:42</div><div class="t">Ruta 5 Sur: tránsito lento en Graneros<i>|</i>Lluvia el jueves en O'Higgins<i>|</i>O'Higgins recibe a Colo-Colo</div></div>
+  </div></div>
+</div>
+
+</div>
+</body></html>

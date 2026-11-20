@@ -1,0 +1,56 @@
+# MEMORY.md (índice de las notas de memoria del proyecto)
+
+Reconstruido a partir de las líneas que aparecen en las sesiones. Cada nota tiene su archivo en esta carpeta solo si alguna sesión la leyó o la escribió.
+
+- [Mejora de voz](audio-mejora.md) — estilo Adobe Podcast: audio-env py3.11+CUDA, mejorar_voz.py (eco→DeepFilterNet→pulido→Resemble IA), parches del entorno *(contenido no recuperado)*
+- [Cancha en vivo O'Higgins](cancha-en-vivo.md) — tracker tipo casas de apuestas para relato sin imagen: emerge-cancha (server.py 8780 + panel + cancha OBS), ESPN + operador *(contenido no recuperado)*
+- [Defensa tesis ludopatía](defensa-ludopatia.md) — PPT 26 láminas para la defensa del 4 nov 2026 (con Matías González); pendientes de verificación anotados *(contenido no recuperado)*
+- [Sistema de auspiciadores](emerge-auspiciadores-app.md) — Desktop *(contenido no recuperado)*
+- [Flyer semáforo Emerge FM](emerge-flyer-semaforo.md) — 10×15 cm a una cara, «¿Aburrido? ¿Estresado?» y luz verde gigante con 105.5; emerge-flyer/tools/flyer10x15.py *(contenido no recuperado)*
+- [Emerge HQ](emerge-hq-app.md) — la radio gestionada como videojuego (salas = módulos); mapa y datos de ejemplo, falta el plano real *(contenido no recuperado)*
+- [Imán Emerge FM](emerge-iman.md) — imán 5×7 B1 «Dial en verde» + tarjeta de presentación 9×5; PDF imprenta listos, Perilla y Ondas exportadas como «(segunda opcion)»
+- [Informe para locución](emerge-informe-locucion.md) — PDF 7 págs. de radio + parrilla + música para el locutor comercial/hora/presentaciones; emerge-informe-locucion *(contenido no recuperado)*
+- [Lámina puerta Emerge FM](emerge-lamina-puerta.md) — lámina 60×120 cm «Placa institucional»; build.py → PDF CMYK en curvas
+- [Logo Emerge FM 105.5](emerge-logo-105-5.md) — isotipo + EMERGE FM + 105.5, todo Unbounded ExtraBold sin líneas; LOGO
+- [Manual de marca Emerge FM](emerge-manual-marca.md) — ruta del PDF, paleta, tipografías, eslogan y reglas del isotipo
+- [Musicoteca Emerge FM](emerge-musicoteca.md) — app local: buscador de canciones, catálogo 80/90 de faltantes, bloques para RadioBOSS; biblioteca real en disco externo *(contenido no recuperado)*
+- [Horarios Emerge Noticias](emerge-noticias-horarios.md) — Mediodía es 12:00–13:00 (no 13–14); Primera 8–9, Central 20–21 L-M-V, Finde 8–10 *(contenido no recuperado)*
+- [Plantillas IG Emerge Noticias](emerge-noticias-ig.md) — 11 formatos de noticia + portada de reel; HTML y PowerPoint editable para Canva con convertidor genérico *(contenido no recuperado)*
+- [Miniatura Emerge Noticias](emerge-noticias-miniatura.md) — 16:9 para YouTube/FB, 4 ediciones + modo titular; emerge-noticias-miniatura, exportar.py *(contenido no recuperado)*
+- [Pausas «Ya volvemos»](emerge-pausas.md) — genérica Emerge (emerge-pausa) y La Furia con Kaco (furia-promo/pausa); entrada + espera sin corte, HTML OBS + MP4 *(contenido no recuperado)*
+- [Serie IG «Suena en ___ y en Emerge»](emerge-posts-suena-en.md) — carruseles TikTok/GTA/cine/etc. con canciones de la biblioteca; guiones listos, falta diseño
+- [Sintonía Emerge FM](emerge-sintonia.md) — station ID 12 s sintonizando 105.5 → logo, 3 formatos MP4
+- [Sonando en Emerge](emerge-sonando.md) — widget «ahora suena» estilo Amuse para OBS desde RadioBOSS en otro PC; emerge-sonando, server.py 8785, logo girando si no hay carátula *(contenido no recuperado)*
+- [Loop standby Emerge FM](emerge-standby.md) — 64 s, 6 escenas, solo 105.5 en el dial, comunas + Catedral; HTML OBS con reloj y «A continuación» + MP4 limpio; emerge-standby *(contenido no recuperado)*
+- [Stickers Emerge FM](emerge-stickers.md) — hoja carta con 14 stickers rectangulares para papel adhesivo completo; tools/stickers.py en emerge-iman *(contenido no recuperado)*
+- [Tema WP Emerge FM](emerge-wp-theme.md) — convertir diseño Claude Design del portal Emerge FM en tema WordPress; esperar orden antes de construir
+- [No tocar diseños aprobados](feedback-no-cambiar-aprobado.md) — un ajuste puntual no se extiende a todos los posts sin preguntar
+- [Nunca «cuña» en redes](feedback-no-cuna-en-redes.md) — ni en reels, gráficas ni descripciones; tampoco chips «DESTACADO»/«CUÑA COMPLETA»
+- [App Forma30](forma30-app.md) — forma30.html: reto calistenia 30 días + tracker de comida estilo Fitia, todo en un HTML *(contenido no recuperado)*
+- [Promo La Ciudad de la Furia (remake)](furia-promo.md) — promocional 26,6 s rehecho desde cero en cómic con personaje articulado; carpeta furia-promo, HTML + MP4 16:9 *(contenido no recuperado)*
+- [GC La Ciudad de la Furia](gc-ciudad-furia.md) — gc-furia.html + panel-furia.html en furia-promo/gc; mismo sistema, estética cómic *(contenido no recuperado)*
+- [GC Emerge Noticias](gc-emerge-noticias.md) — estilo canal 24 horas; placa + fuente base (cintillo, reloj, mosca) en emerge-noticias-gc
+- [GC Emerge tu mañana](gc-emerge-tu-manana.md) — zócalos para OBS (gc.html + panel.html) con la estética del matinal; el GC anterior está en Desktop
+- [Intro La Ciudad de la Furia](intro-ciudad-furia.md) — intro 30 s Canvas + MP4 del programa de Kaco López en Emerge FM; fuente modular + build.py *(contenido no recuperado)*
+- [Intro Emerge Noticias](intro-emerge-noticias.md) — informativo 4 ediciones, collage diario sobre mapa real de O'Higgins; 16:9 y 9:16 exportados *(contenido no recuperado)*
+- [Intro Emerge tu mañana](intro-emerge-tu-manana.md) — intro 20 s riso SVG+GSAP del matinal de Gabriel Figueroa; 16:9 y 9:16, Gabriel dibujado (no fotos)
+- [Jingle KLC](jingle-klc.md) — spot 32 s auspiciador KLC: canción desde 1:19, locuciones sobre el solo, cierre cantado; voz «opción 2» (-1 st natural)
+- [Loop Viaje sin Rumbo](loop-viaje-sin-rumbo.md) — loop 60 s avatar de Valentina para stream sin cámara; 10 escenas, 16:9 sin sonido
+- [Plantillas de entrevista](plantillas-entrevista.md) — 5 diseños fijos (V1 titular, V2 dividida, V3 noticiero, H1 panel, H2 burbuja) para automatizar; le interesa V1 (titular): 5 variaciones V1a–V1e, falta elegir
+- [Promo Viaje sin Rumbo](promo-viaje-sin-rumbo.md) — promo 20 s lápiz pasta azul del programa de Valentina Sepúlveda en Emerge FM; HTML + MP4 16:9 y 9:16 *(contenido no recuperado)*
+- [Radio Emerge FM 105.5](radio-emerge-fm.md) — el usuario es director de esta radio en O'Higgins; vende auspicios en Rancagua y Machali; IG @radioemergefm, FB «Radio Emerge FM Rancagua»
+- [Rancagua Heroica](rancagua-heroica-app.md) — juego 3D estilo GTA en Rancagua con mapa real de OSM; prioridad: ciudad bien mapeada y fluidez *(contenido no recuperado)*
+- [Reel 9 de noviembre](reel-9-noviembre.md) — 16 s solo fecha, pantalla LED + ecualizador real; emerge-fecha *(contenido no recuperado)*
+- [Reel cuña ASGRO](reel-cuna-asgro.md) — plantilla de cuña: foto+onda arriba, Roberto al medio, subtítulos karaoke; faster-whisper en audio-env; emerge-cuna-asgro
+- [Reel cuña Chépica + rebaja $300](reel-cuna-chepica.md) — José Cepeda y 2ª cuña de Camilo con destacado inicial; plantilla más nueva (emerge-cuna-rebaja), subtítulos en seco
+- [Reel despacho Rengo ciclistas](reel-despacho-rengo-ciclistas.md) — Roberto en terreno + Fabián Cofré, video vertical completo con logo, GC al inicio y subtítulos; emerge-despacho-roberto
+- [Reel La Ciudad de la Furia](reel-furia.md) — reel vertical de Kaco con letras/logo 3D detrás de la persona y subtítulos amarillos; pipeline Python en reel-furia
+- [Reel de lanzamiento](reel-lanzamiento.md) — 24 s vertical para el lunes 9 nov 2026: dial + tramos de los promos + fecha + logo; emerge-lanzamiento *(contenido no recuperado)*
+- [Reel noticia: radio el medio más confiable](reel-noticia-radio-confiable.md) — Gabriel en Emerge tu mañana, paleta del matinal, panel de datos animado + inserts; emerge-noticia-reel
+- [Reel primer día al aire](reel-primer-dia.md) — 31 s vertical, 5 clips del stream con GC a ancho completo, sin audio; emerge-primer-dia/build.py
+- [Reels ENEO 2026](reels-eneo-2026.md) — entrevistas Pro O'Higgins 18-11 con gancho corto + completo; emerge-reels-1118, build.py IMG_xxxx
+- [App Ruta Sur](ruta-sur-app.md) — PWA navegación Irarrázaval⇄Rancagua estilo GTA/Minecraft, iPhone en soporte *(contenido no recuperado)*
+- [App StudioPlan](studioplan-app.md) — estudio-plano.html: plano blueprint de estudio radio/streaming; lo clave es el diseñador de mesa *(contenido no recuperado)*
+- [Perfil fitness del usuario](user-fitness-profile.md) — chileno, principiante en calistenia, solo peso corporal, objetivo perder grasa *(contenido no recuperado)*
+- [Corrección video viaje](viaje-correccion.md) — viaje.mp4 → viaje_corregido.mp4: color adaptativo, estabilización, loop de música rearmado; borrador CapCut 0723 y fuentes 720p *(contenido no recuperado)*
+- [Programa Viaje sin Rumbo](viaje-sin-rumbo-programa.md) — armado de la hora desde pauta + audios; mención (leída, con cortina) ≠ frase (cuña grabada, sin cortina)
