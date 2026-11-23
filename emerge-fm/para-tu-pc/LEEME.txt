@@ -1,0 +1,11 @@
+INSTALAR EN EL PC
+
+1. Descomprime este zip en cualquier carpeta (por ejemplo, el Escritorio).
+2. Entra a la carpeta, clic derecho en instalar.ps1 y elige "Ejecutar con PowerShell".
+   Si Windows lo bloquea, abre PowerShell en esa carpeta y escribe:
+   powershell -ExecutionPolicy Bypass -File .\instalar.ps1
+3. Listo: las sesiones NUEVAS de Claude Code en el PC tendran el contexto de Emerge FM,
+   los logos, el dossier, la skill de notas y todo lo rescatado.
+
+Queda todo en C:\Users\farid\.claude\ (emerge-fm, skills y CLAUDE.md).
+No reemplaza tus notas de memoria: solo agrega las que falten. Lo que cambia lo respalda antes.

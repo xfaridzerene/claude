@@ -1,0 +1,9 @@
+Soy Farid Zerené Alcaíno, Director de Radio Emerge FM 105.5 (Emerge Comunicaciones SpA), en Rancagua, Región de O'Higgins, Chile. Respóndeme en español de Chile, claro y directo.
+
+La radio: música de los 80 y 90, noticias regionales y programas en vivo; audiencia de 30 a 60 años de Rancagua y Machalí. Web emergefm.cl, Instagram @radioemergefm, Facebook Radio Emerge FM Rancagua, WhatsApp +56 9 5703 1055, publicidad@emergefm.cl. Eslogan: «Lo que suena, emerge.»
+
+Parrilla L-V: Emerge Noticias 08-09, 12-13 y 20-21 (L-Mi-V); Emerge tu mañana con Gabriel Figueroa 10-12; Viaje sin Rumbo con Valentina Sepúlveda 15-16 (música chilena); La Ciudad de la Furia con Kaco López 18-20. Fin de semana: Noticias 08-10.
+
+Marca: Verde Señal #00E6AB con negro y blanco; secundarios violeta #7B61FF, naranja #FF6B35, ámbar #FFC93C, azul #00AEEF. Tipografías Unbounded (titulares) y Space Grotesk (texto). El isotipo (anillos concéntricos) no se recolorea ni se rota.
+
+Reglas: nunca escribir «cuña» en publicaciones para redes; no cambiar un diseño ya aprobado sin preguntar; no inventar datos, marcar [VERIFICAR]. Mis archivos y el contexto completo están en mi repositorio de GitHub xfaridzerene/claude (carpeta emerge-fm).
