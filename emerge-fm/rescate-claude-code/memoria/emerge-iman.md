@@ -10,7 +10,7 @@ metadata:
 
 Proyecto en `Desktop\claude code\emerge-iman\` (creado 2026-10-16) para [[radio-emerge-fm]]: imán para un evento con empresarios (semana del 19-oct-2026). El usuario se encarga de la imprenta y de la cantidad, así que no hay que preguntarle por eso. Tampoco va ninguna mención al evento.
 
-- Decisiones: el imán va limpio de marca (5×7 cm, vertical y horizontal); lo comercial y el QR van en una tarjeta 10×15 donde va pegado el imán. Eslogan «Lo que suena, emerge.». Contacto: Farid Zerené Alcaíno, Director, +56 9 7899 3678; el QR lleva a wa.me con un mensaje ya escrito.
+- Decisiones: el imán va limpio de marca (5×7 cm, vertical y horizontal); lo comercial y el QR van en una tarjeta 10×15 donde va pegado el imán. Eslogan «Lo que suena, emerge.». Contacto: Farid Zerené Alcaíno, Director, [teléfono personal omitido]; el QR lleva a wa.me con un mensaje ya escrito.
 - El mensaje comercial lo escribió Claude, porque el de ejemplo («Tu marca, en frecuencia…») no le gustó al usuario: frente «Haz que tu marca suene.», reverso «Conversemos.».
 - `python tools/propuestas.py` genera propuestas.html (autocontenido, con las fuentes incrustadas): A Placa, B Dial, C Eslogan, D Verde Señal. Usa métricas reales de las fuentes para calzar los anchos; textos y colores son constantes al inicio del archivo.
 
